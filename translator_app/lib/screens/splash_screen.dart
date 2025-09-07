@@ -31,12 +31,12 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            /// Top Lottie Animation
+            /// Lottie Animation (only one asset)
             Expanded(
               flex: 3,
               child: Center(
                 child: Lottie.asset(
-                  "assets/animations/world.json", // apni Lottie file ka path
+                  "assets/animations/translate.json", // yahan apni lottie file ka path do
                   width: 300,
                   height: 300,
                   fit: BoxFit.contain,

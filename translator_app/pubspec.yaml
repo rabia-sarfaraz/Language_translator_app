@@ -18,16 +18,15 @@ dependencies:
   # Fonts
   google_fonts: ^6.2.1
 
-  # Animations
+  # Animations (Lottie JSON files)
   lottie: ^3.1.2
 
-  # SVG / Illustrations
+  # SVG / Illustrations (if needed later)
   flutter_svg: ^2.0.9
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^5.0.0
 
 flutter:
@@ -37,5 +36,4 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - assets/animations/world.json
     - assets/animations/translate.json
