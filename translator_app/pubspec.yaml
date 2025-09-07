@@ -1,0 +1,41 @@
+name: translator_app
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove if you want to publish on pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI Icons
+  cupertino_icons: ^1.0.8
+
+  # Fonts
+  google_fonts: ^6.2.1
+
+  # Animations
+  lottie: ^3.1.2
+
+  # SVG / Illustrations
+  flutter_svg: ^2.0.9
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Assets for images, icons, and animations
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/animations/world.json
+    - assets/animations/translate.json

@@ -1,0 +1,26 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'splash_screen.dart';
+import 'home_screen.dart';
+
+void main() {
+  runApp(const TranslatorApp());
+}
+
+class TranslatorApp extends StatelessWidget {
+  const TranslatorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "Language Translator",
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        textTheme: GoogleFonts.poppinsTextTheme(),
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+      ),
+      home: const SplashScreen(),
+    );
+  }
+}
