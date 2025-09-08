@@ -52,7 +52,10 @@ class _SplashScreenState extends State<SplashScreen> {
             Expanded(
               flex: 1,
               child: Padding(
-                padding: const EdgeInsets.only(left: 40, right: 20),
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                ), // thoda left shift
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start, // left aligned
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -79,24 +82,21 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
 
-            /// Loader with "Loading..." under it
+            /// Loader with "Loading..." row wise center
             Expanded(
               flex: 1,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const SizedBox(height: 30), // thoda neeche push kiya
-                  Align(
-                    alignment: Alignment.centerRight, // thoda aage move
-                    child: Column(
-                      children: const [
-                        RotatingIconLoader(
-                          assetPath: "assets/icons/loader.png",
-                        ),
-                        SizedBox(height: 10),
-                        LoadingText(),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center, // center me align
+                    children: const [
+                      RotatingIconLoader(assetPath: "assets/icons/loader.png"),
+                      SizedBox(width: 12),
+                      LoadingText(),
+                    ],
                   ),
                 ],
               ),
