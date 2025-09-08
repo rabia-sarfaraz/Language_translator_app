@@ -31,18 +31,17 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start, // Left align text
           children: [
             /// Lottie Animation
             Expanded(
               flex: 3,
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 40), // thoda neeche
+                  padding: const EdgeInsets.only(top: 40),
                   child: Lottie.asset(
                     "assets/animations/translate.json",
-                    width: 260,
-                    height: 260,
+                    width: 340,
+                    height: 214,
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -53,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Expanded(
               flex: 1,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.only(left: 40, right: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start, // left aligned
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -63,6 +62,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       style: GoogleFonts.roboto(
                         fontSize: 32,
                         fontWeight: FontWeight.w700, // Bold
+                        color: const Color(0xFF2C7DF7),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -71,6 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       style: GoogleFonts.roboto(
                         fontSize: 32,
                         fontWeight: FontWeight.w500, // Medium
+                        color: const Color(0xFF2C7DF7),
                       ),
                     ),
                   ],
@@ -78,16 +79,21 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
 
-            /// Loader with "Loading..."
+            /// Loader with "Loading..." row wise center
             Expanded(
               flex: 1,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: const [
-                  SizedBox(height: 20),
-                  RotatingIconLoader(assetPath: "assets/icons/loader.png"),
-                  SizedBox(height: 10),
-                  LoadingText(),
+                children: [
+                  const SizedBox(height: 30), // thoda neeche push kiya
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      RotatingIconLoader(assetPath: "assets/icons/loader.png"),
+                      SizedBox(width: 12),
+                      LoadingText(),
+                    ],
+                  ),
                 ],
               ),
             ),
