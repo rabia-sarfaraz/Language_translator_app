@@ -53,9 +53,9 @@ class _SplashScreenState extends State<SplashScreen> {
               flex: 1,
               child: Padding(
                 padding: const EdgeInsets.only(
-                  left: 20,
+                  left: 8, // 👈 reduced from 20 to 8 (closer to left border)
                   right: 20,
-                ), // thoda left shift
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start, // left aligned
                   mainAxisAlignment: MainAxisAlignment.center,
