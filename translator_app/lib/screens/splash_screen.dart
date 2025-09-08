@@ -62,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       style: GoogleFonts.roboto(
                         fontSize: 32,
                         fontWeight: FontWeight.w700, // Bold
-                        color: const Color(0xFF2C7DF7),
+                        color: Colors.black, // black color
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -70,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       "Language Translate\nApp",
                       style: GoogleFonts.roboto(
                         fontSize: 32,
-                        fontWeight: FontWeight.w500, // Medium
+                        fontWeight: FontWeight.w700, // Bold
                         color: const Color(0xFF2C7DF7),
                       ),
                     ),
@@ -79,20 +79,24 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
 
-            /// Loader with "Loading..." row wise center
+            /// Loader with "Loading..." under it
             Expanded(
               flex: 1,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const SizedBox(height: 30), // thoda neeche push kiya
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      RotatingIconLoader(assetPath: "assets/icons/loader.png"),
-                      SizedBox(width: 12),
-                      LoadingText(),
-                    ],
+                  Align(
+                    alignment: Alignment.centerRight, // thoda aage move
+                    child: Column(
+                      children: const [
+                        RotatingIconLoader(
+                          assetPath: "assets/icons/loader.png",
+                        ),
+                        SizedBox(height: 10),
+                        LoadingText(),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -156,7 +160,7 @@ class LoadingText extends StatelessWidget {
       "Loading...",
       style: GoogleFonts.inter(
         fontSize: 14,
-        fontWeight: FontWeight.w400, // Regular
+        fontWeight: FontWeight.w700, // Bold
         color: Colors.black87,
       ),
     );
