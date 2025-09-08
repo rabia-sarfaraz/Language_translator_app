@@ -82,19 +82,19 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
 
-            /// Loader with "Loading..." row wise center
+            /// Loader with "Loading..." vertically aligned
             Expanded(
               flex: 1,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const SizedBox(height: 30), // thoda neeche push kiya
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center, // center me align
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: const [
                       RotatingIconLoader(assetPath: "assets/icons/loader.png"),
-                      SizedBox(width: 12),
+                      SizedBox(height: 8),
                       LoadingText(),
                     ],
                   ),
