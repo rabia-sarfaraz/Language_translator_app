@@ -34,6 +34,6 @@ flutter:
 
   # Assets for images, icons, and animations
   assets:
-    - assets/images/
+    - assets/images/Ellipse.png
     - assets/icons/loader.png
     - assets/animations/translate.json
