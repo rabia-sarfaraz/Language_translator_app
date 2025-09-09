@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -10,23 +11,27 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.white, // Pure white background
       body: Stack(
         children: [
-          /// Ellipse Gradient (Center me ellipse)
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  center: Alignment.center,
-                  radius: 1.0,
-                  colors: [
-                    Color.fromRGBO(44, 125, 247, 0.30), // 30%
-                    Color.fromRGBO(44, 125, 247, 0.20), // 20%
-                    Color.fromRGBO(44, 125, 247, 0.02), // 2%
-                  ],
-                  stops: [0.0, 0.53, 0.96],
+          /// Ellipse with exact size, position and rotation
+          Positioned(
+            left: 0, // X position set karo agar adjust karna ho
+            top: -2.59, // Y position
+            child: Transform.rotate(
+              angle: -11.26 * pi / 180, // Rotation in radians
+              child: Container(
+                width: 508.36,
+                height: 588.24,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    center: Alignment.center,
+                    radius: 1.0,
+                    colors: [
+                      Color.fromRGBO(44, 125, 247, 0.30), // 30%
+                      Color.fromRGBO(44, 125, 247, 0.20), // 20%
+                      Color.fromRGBO(44, 125, 247, 0.02), // 2%
+                    ],
+                    stops: [0.0, 0.53, 0.96],
+                  ),
                 ),
               ),
             ),
