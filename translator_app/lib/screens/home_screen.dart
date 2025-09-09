@@ -7,161 +7,58 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const SizedBox(height: 40),
-
-            /// App Title
-            Text(
-              "Language Translate\nApp",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.roboto(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-              ),
-            ),
-
-            /// Main Illustration (Globe + Bubbles + Flags)
-            Expanded(
-              flex: 3,
-              child: Center(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    /// Globe background
-                    Image.asset(
-                      "assets/images/globe.png", // apna globe ya lottie asset rakho
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.contain,
-                    ),
-
-                    /// English Bubble
-                    Positioned(
-                      right: 20,
-                      top: 40,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.blue[400],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          "How are you?",
-                          style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    /// Spanish Bubble
-                    Positioned(
-                      left: 20,
-                      bottom: 40,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[700],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          "¡Hola!\n¿Cómo estás?",
-                          style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    /// Flags (you can use asset images here)
-                    Positioned(
-                      top: 20,
-                      right: 0,
-                      child: Image.asset(
-                        "assets/icons/uk_flag.png",
-                        width: 30,
-                        height: 30,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 20,
-                      left: 0,
-                      child: Image.asset(
-                        "assets/icons/spain_flag.png",
-                        width: 30,
-                        height: 30,
-                      ),
-                    ),
-                    Positioned(
-                      top: 10,
-                      left: 30,
-                      child: Image.asset(
-                        "assets/icons/brazil_flag.png",
-                        width: 20,
-                        height: 20,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 10,
-                      right: 40,
-                      child: Image.asset(
-                        "assets/icons/india_flag.png",
-                        width: 20,
-                        height: 20,
-                      ),
-                    ),
+      backgroundColor: Colors.white, // Pure white background
+      body: Stack(
+        children: [
+          /// Ellipse Gradient (Center me ellipse)
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              width: 400,
+              height: 400,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: 1.0,
+                  colors: [
+                    Color.fromRGBO(44, 125, 247, 0.30), // 30%
+                    Color.fromRGBO(44, 125, 247, 0.20), // 20%
+                    Color.fromRGBO(44, 125, 247, 0.02), // 2%
                   ],
+                  stops: [0.0, 0.53, 0.96],
                 ),
               ),
             ),
+          ),
 
-            /// Tagline
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Column(
-                children: [
-                  Text(
-                    "Translate your Language",
-                    style: GoogleFonts.roboto(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
+          /// Center Text
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Language Translate",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                  const SizedBox(height: 20),
-
-                  /// Loader + Loading text
-                  Column(
-                    children: const [
-                      CircularProgressIndicator(
-                        color: Colors.blue,
-                        strokeWidth: 2,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Loading...",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
+                ),
+                Text(
+                  "App",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
