@@ -23,7 +23,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
           const SizedBox(height: 33), // ✅ Top space
           /// Custom Rectangle AppBar
           Container(
-            width: 360,
+            width: double.infinity, // ✅ Full width
             height: 56,
             color: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 16),
