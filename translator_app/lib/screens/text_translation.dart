@@ -30,13 +30,14 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                /// Left icon + text
+                /// Left image + text
                 Row(
                   children: [
-                    const Icon(
-                      Icons.menu,
-                      color: Colors.black,
-                    ), // 🔹 Left icon (replace path later)
+                    Image.asset(
+                      "assets/images/left_icon.png", // 🔹 Left icon path
+                      height: 24,
+                      width: 24,
+                    ),
                     const SizedBox(width: 12),
                     Text(
                       "Translator",
@@ -49,11 +50,12 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                   ],
                 ),
 
-                /// Right icon
-                const Icon(
-                  Icons.settings,
-                  color: Colors.black,
-                ), // 🔹 Right icon (replace path later)
+                /// Right image
+                Image.asset(
+                  "assets/images/right_icon.png", // 🔹 Right icon path
+                  height: 24,
+                  width: 24,
+                ),
               ],
             ),
           ),
