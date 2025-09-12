@@ -34,7 +34,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                 Row(
                   children: [
                     Image.asset(
-                      "assets/images/left_icon.png", // 🔹 Left icon path
+                      "assets/images/back.png", // 🔹 Left icon path
                       height: 24,
                       width: 24,
                     ),
@@ -52,7 +52,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
                 /// Right image
                 Image.asset(
-                  "assets/images/right_icon.png", // 🔹 Right icon path
+                  "assets/images/setting.png", // 🔹 Right icon path
                   height: 24,
                   width: 24,
                 ),
