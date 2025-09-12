@@ -1,8 +1,28 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'text_translation.dart'; // 👈 apni dusri screen import karna na bhoolna
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    // 3 second baad agli screen pe navigate
+    Timer(const Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const TextTranslationScreen()),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +30,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.white, // White background
       body: Stack(
         children: [
-          /// Ellipse image (tum apna path dogi assets/images/ellipse.png)
+          /// Ellipse image
           Positioned(
             top: -2.59,
             left: 0,
@@ -50,6 +70,14 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+          ),
+
+          /// Circular Progress Bar (center me)
+          const Center(
+            child: CircularProgressIndicator(
+              color: Colors.blue,
+              strokeWidth: 4,
             ),
           ),
         ],
