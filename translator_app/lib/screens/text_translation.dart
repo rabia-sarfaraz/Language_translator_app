@@ -143,8 +143,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                   height: 40,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   child: Center(
                     child: Image.asset(
@@ -163,20 +162,21 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
           const SizedBox(height: 24),
 
           // Input box
-          Center(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
-              width: 328,
+              width: double.infinity,
               height: 235,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.black.withOpacity(0.40)),
               ),
               child: Stack(
                 children: [
+                  // Placeholder (only when empty)
                   if (_controller.text.isEmpty)
                     Positioned(
-                      top: 12,
+                      top: 36,
                       left: 12,
                       child: Text(
                         "Text here to translate...",
@@ -186,6 +186,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         ),
                       ),
                     ),
+                  // Top right icon
                   Positioned(
                     top: 8,
                     right: 8,
@@ -195,6 +196,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       height: 56,
                     ),
                   ),
+                  // Text field
                   Positioned.fill(
                     top: 36,
                     bottom: 56,
@@ -215,10 +217,11 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       onChanged: (_) => setState(() {}),
                     ),
                   ),
+                  // Bottom icons (left half)
                   Positioned(
                     left: 12,
                     bottom: 8,
-                    right: 12,
+                    right: MediaQuery.of(context).size.width / 2,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -259,7 +262,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             child: ElevatedButton(
               onPressed: _isTranslating ? null : _onTranslatePressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2076F7),
+                backgroundColor: primaryBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
@@ -286,37 +289,48 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const Spacer(),
 
-          // Bottom nav
+          // Bottom nav with active underline
           Container(
             width: double.infinity,
             height: 56,
             color: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                _BottomNav(
-                  iconPath: "assets/images/bottom_text.png",
-                  label: "Text Translation",
-                  active: true,
-                  activeColor: primaryBlue,
-                  inactiveColor: bottomInactive,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  children: [
+                    Container(height: 2, width: 40, color: primaryBlue),
+                    const SizedBox(height: 4),
+                    Image.asset(
+                      "assets/images/bottom_text.png",
+                      width: 20,
+                      height: 20,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Text Translation",
+                      style: GoogleFonts.roboto(
+                        fontSize: 10,
+                        color: primaryBlue,
+                      ),
+                    ),
+                  ],
                 ),
-                _BottomNav(
+                const _BottomNav(
                   iconPath: "assets/images/bottom_voice.png",
                   label: "Voice Translation",
                   active: false,
                   activeColor: primaryBlue,
                   inactiveColor: bottomInactive,
                 ),
-                _BottomNav(
+                const _BottomNav(
                   iconPath: "assets/images/bottom_dict.png",
                   label: "Dictionary",
                   active: false,
                   activeColor: primaryBlue,
                   inactiveColor: bottomInactive,
                 ),
-                _BottomNav(
+                const _BottomNav(
                   iconPath: "assets/images/bottom_conv.png",
                   label: "Conversation",
                   active: false,
@@ -340,8 +354,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(15),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -353,7 +366,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const Icon(Icons.arrow_drop_down),
+            const Icon(Icons.keyboard_arrow_down),
           ],
         ),
       ),
