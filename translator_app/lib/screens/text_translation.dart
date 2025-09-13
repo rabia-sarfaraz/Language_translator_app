@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
-/// Language codes mapping for translation API
+/// Full language codes
 const Map<String, String> languageCodes = {
   "English": "en",
   "Spanish": "es",
-  "Urdu": "ur",
   "French": "fr",
   "German": "de",
+  "Italian": "it",
+  "Urdu": "ur",
   "Arabic": "ar",
+  "Hindi": "hi",
+  "Chinese": "zh",
+  "Russian": "ru",
 };
 
 class TextTranslationScreen extends StatefulWidget {
@@ -25,16 +29,17 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
   String toLanguage = "Spanish";
 
   final TextEditingController _controller = TextEditingController();
+  String? translatedText;
   bool _isTranslating = false;
 
-  /// ✅ Multiple LibreTranslate servers for fallback
+  /// Multiple LibreTranslate servers for fallback
   final List<String> _servers = [
     "https://translate.astian.org/translate",
     "https://libretranslate.de/translate",
     "https://translate.fedilab.app/translate",
   ];
 
-  /// ✅ Translation with fallback
+  /// Translation with fallback
   Future<String> translateText(String text, String from, String to) async {
     final body = {
       'q': text,
@@ -56,7 +61,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
           final data = jsonDecode(response.body);
           return data['translatedText'] ?? '';
         }
-      } catch (e) {
+      } catch (_) {
         // try next server
       }
     }
@@ -73,25 +78,19 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       return;
     }
 
-    setState(() => _isTranslating = true);
+    setState(() {
+      _isTranslating = true;
+      translatedText = null;
+    });
 
     try {
       final translated = await translateText(text, fromLanguage, toLanguage);
       if (!mounted) return;
 
-      setState(() => _isTranslating = false);
-
-      // 🔹 Navigate to text_translation1.dart
-      Navigator.pushNamed(
-        context,
-        '/text_translation1',
-        arguments: {
-          'sourceText': text,
-          'translatedText': translated,
-          'fromLanguage': fromLanguage,
-          'toLanguage': toLanguage,
-        },
-      );
+      setState(() {
+        _isTranslating = false;
+        translatedText = translated;
+      });
     } catch (e) {
       setState(() => _isTranslating = false);
       ScaffoldMessenger.of(
@@ -175,22 +174,23 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          // Input box
+          // Input + output box
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
               width: double.infinity,
-              height: 260, // ⬆️ slightly increased height
+              height: 260,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: Colors.black.withOpacity(0.25), // stroke
+                  color: Colors.black.withOpacity(0.25),
                   width: 1,
                 ),
               ),
               child: Stack(
                 children: [
+                  // Hint
                   if (_controller.text.isEmpty)
                     Positioned(
                       top: 36,
@@ -203,6 +203,8 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         ),
                       ),
                     ),
+
+                  // Inside icon
                   Positioned(
                     top: 8,
                     right: 8,
@@ -212,9 +214,11 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       height: 56,
                     ),
                   ),
+
+                  // Input text
                   Positioned.fill(
-                    top: 36,
-                    bottom: 56,
+                    top: 8,
+                    bottom: 130,
                     left: 12,
                     right: 12,
                     child: TextField(
@@ -232,6 +236,24 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       onChanged: (_) => setState(() {}),
                     ),
                   ),
+
+                  // Output text
+                  if (translatedText != null)
+                    Positioned(
+                      bottom: 56,
+                      left: 12,
+                      right: 12,
+                      child: Text(
+                        translatedText!,
+                        style: GoogleFonts.roboto(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+
+                  // Bottom icons
                   Positioned(
                     right: 12,
                     bottom: 8,
