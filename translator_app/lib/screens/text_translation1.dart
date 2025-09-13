@@ -13,19 +13,20 @@ const Map<String, String> languageCodes = {
   "Arabic": "ar",
 };
 
-class TextTranslationScreen extends StatefulWidget {
-  const TextTranslationScreen({super.key});
+class TextTranslation1Screen extends StatefulWidget {
+  const TextTranslation1Screen({super.key});
 
   @override
-  State<TextTranslationScreen> createState() => _TextTranslationScreenState();
+  State<TextTranslation1Screen> createState() => _TextTranslation1ScreenState();
 }
 
-class _TextTranslationScreenState extends State<TextTranslationScreen> {
+class _TextTranslation1ScreenState extends State<TextTranslation1Screen> {
   String fromLanguage = "English";
   String toLanguage = "Spanish";
 
   final TextEditingController _controller = TextEditingController();
   bool _isTranslating = false;
+  String translatedText = "";
 
   Future<String> translateText(String text, String from, String to) async {
     final uri = Uri.parse('https://libretranslate.de/translate');
@@ -64,19 +65,10 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       final translated = await translateText(text, fromLanguage, toLanguage);
       if (!mounted) return;
 
-      setState(() => _isTranslating = false);
-
-      // 🔹 Navigate to text_translation1.dart
-      Navigator.pushNamed(
-        context,
-        '/text_translation1',
-        arguments: {
-          'sourceText': text,
-          'translatedText': translated,
-          'fromLanguage': fromLanguage,
-          'toLanguage': toLanguage,
-        },
-      );
+      setState(() {
+        _isTranslating = false;
+        translatedText = translated; // ✅ show inside new rectangle
+      });
     } catch (e) {
       setState(() => _isTranslating = false);
       ScaffoldMessenger.of(
@@ -165,12 +157,12 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
               width: double.infinity,
-              height: 260, // ⬆️ slightly increased height
+              height: 260,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: Colors.black.withOpacity(0.25), // stroke
+                  color: Colors.black.withOpacity(0.25),
                   width: 1,
                 ),
               ),
@@ -217,6 +209,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       onChanged: (_) => setState(() {}),
                     ),
                   ),
+                  // Bottom icons (right side)
                   Positioned(
                     right: 12,
                     bottom: 8,
@@ -286,6 +279,85 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             ),
           ),
 
+          const SizedBox(height: 24), // 3 line spacing
+          // ✅ New translated result box
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Container(
+              width: double.infinity,
+              height: 260,
+              decoration: BoxDecoration(
+                color: primaryBlue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Stack(
+                children: [
+                  // Left top image (replace with your path)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Image.asset(
+                      "assets/images/inside_left.png",
+                      width: 56,
+                      height: 56,
+                    ),
+                  ),
+                  // Translated text
+                  Positioned(
+                    top: 60, // spacing from top
+                    left: 12,
+                    right: 12,
+                    child: Text(
+                      translatedText,
+                      textAlign: TextAlign.left,
+                      style: GoogleFonts.roboto(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        height: 1.0, // 100% line height
+                      ),
+                    ),
+                  ),
+                  // Bottom icons (shifted to left, white)
+                  Positioned(
+                    left: 12,
+                    bottom: 8,
+                    right: MediaQuery.of(context).size.width / 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Image.asset(
+                          "assets/images/icon1.png",
+                          width: 28,
+                          height: 28,
+                          color: Colors.white,
+                        ),
+                        Image.asset(
+                          "assets/images/icon2.png",
+                          width: 28,
+                          height: 28,
+                          color: Colors.white,
+                        ),
+                        Image.asset(
+                          "assets/images/icon3.png",
+                          width: 28,
+                          height: 28,
+                          color: Colors.white,
+                        ),
+                        Image.asset(
+                          "assets/images/icon4.png",
+                          width: 28,
+                          height: 28,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           const Spacer(),
 
           // Bottom nav
@@ -344,6 +416,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
     );
   }
 
+  // 🔹 Language Button
   Widget _buildLanguageButton(String lang, {required bool isFrom}) {
     return PopupMenuButton<String>(
       onSelected: (value) {
