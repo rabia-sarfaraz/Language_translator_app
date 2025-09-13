@@ -15,7 +15,7 @@ dependencies:
   # UI Icons
   cupertino_icons: ^1.0.8
 
-  # Fonts
+  # Fonts (needs http >=1.0.0)
   google_fonts: ^6.2.1
 
   # Animations (Lottie JSON files)
@@ -24,8 +24,8 @@ dependencies:
   # SVG / Illustrations (if needed later)
   flutter_svg: ^2.0.9
 
-  # HTTP for API calls
-  http: ^0.13.6
+  # HTTP for API calls (match google_fonts requirement)
+  http: ^1.5.0
 
 dev_dependencies:
   flutter_test:

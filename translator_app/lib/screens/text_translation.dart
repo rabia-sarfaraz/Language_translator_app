@@ -29,8 +29,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
   bool _isTranslating = false;
 
   Future<String> translateText(String text, String from, String to) async {
-    // Using LibreTranslate public instance as an example (no API key here).
-    // You can replace endpoint / add API key as required for production.
     final uri = Uri.parse('https://libretranslate.de/translate');
 
     final response = await http.post(
@@ -46,7 +44,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
-      // LibreTranslate returns: { "translatedText": "..." }
       return body['translatedText'] ?? '';
     } else {
       throw Exception('Translation failed (${response.statusCode})');
@@ -62,18 +59,14 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       return;
     }
 
-    setState(() {
-      _isTranslating = true;
-    });
+    setState(() => _isTranslating = true);
 
     try {
       final translated = await translateText(text, fromLanguage, toLanguage);
-      setState(() {
-        _isTranslating = false;
-      });
-
-      // Navigate to a simple results screen (you can change this later)
       if (!mounted) return;
+
+      setState(() => _isTranslating = false);
+
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -86,20 +79,16 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
         ),
       );
     } catch (e) {
-      setState(() {
-        _isTranslating = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Translation failed: ${e.toString()}')),
-      );
+      setState(() => _isTranslating = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Translation failed: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Colors from your spec
     const Color primaryBlue = Color(0xFF2076F7);
-    const Color hintGrey = Color(0xFF979797);
     const Color bottomInactive = Color(0xFF6F6F77);
 
     return Scaffold(
@@ -108,7 +97,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
         children: [
           const SizedBox(height: 33),
 
-          // Top white rectangle "appbar"
+          // Top bar
           Container(
             width: double.infinity,
             height: 56,
@@ -119,7 +108,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
               children: [
                 Row(
                   children: [
-                    // back icon placeholder
                     Image.asset(
                       "assets/images/back.png",
                       height: 24,
@@ -141,44 +129,15 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             ),
           ),
 
-          // 3 line spacing (approx)
           const SizedBox(height: 24),
 
-          // Row with two language "buttons" and center white small box
+          // Language selectors
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Left language button (English)
-                GestureDetector(
-                  onTap: () => _showLanguagePicker(isFrom: true),
-                  child: Container(
-                    width: 130,
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          fromLanguage,
-                          style: GoogleFonts.roboto(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const Icon(Icons.arrow_drop_down),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // center white small area (image placeholder)
+                _buildLanguageButton(fromLanguage, isFrom: true),
                 Container(
                   width: 46,
                   height: 40,
@@ -196,42 +155,14 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                     ),
                   ),
                 ),
-
-                // Right language button (Spanish)
-                GestureDetector(
-                  onTap: () => _showLanguagePicker(isFrom: false),
-                  child: Container(
-                    width: 130,
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          toLanguage,
-                          style: GoogleFonts.roboto(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const Icon(Icons.arrow_drop_down),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildLanguageButton(toLanguage, isFrom: false),
               ],
             ),
           ),
 
-          // 3 line spacing
           const SizedBox(height: 24),
 
-          // Big rounded rectangle text area (width 328, height 235)
+          // Input box
           Center(
             child: Container(
               width: 328,
@@ -239,28 +170,22 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                // stroke black with 40% opacity as you requested
                 border: Border.all(color: Colors.black.withOpacity(0.40)),
               ),
               child: Stack(
                 children: [
-                  // Hint text at top-left (it will be covered by actual text when typing)
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    right: 12,
-                    child: _controller.text.isEmpty
-                        ? Text(
-                            "Text here to translate...",
-                            style: GoogleFonts.roboto(
-                              fontSize: 14,
-                              color: const Color(0xFF979797),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-                  ),
-
-                  // Right-side image inside rectangle
+                  if (_controller.text.isEmpty)
+                    Positioned(
+                      top: 12,
+                      left: 12,
+                      child: Text(
+                        "Text here to translate...",
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          color: const Color(0xFF979797),
+                        ),
+                      ),
+                    ),
                   Positioned(
                     top: 8,
                     right: 8,
@@ -268,16 +193,13 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       "assets/images/inside_right.png",
                       width: 56,
                       height: 56,
-                      fit: BoxFit.contain,
                     ),
                   ),
-
-                  // The actual text input area (transparent background so hint shows before typing)
-                  Positioned(
+                  Positioned.fill(
                     top: 36,
+                    bottom: 56,
                     left: 12,
                     right: 12,
-                    bottom: 56, // leave space at bottom for icons row
                     child: TextField(
                       controller: _controller,
                       maxLines: null,
@@ -287,47 +209,40 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       ),
                       decoration: const InputDecoration(
                         border: InputBorder.none,
-                        isCollapsed: true, // reduces default paddings
+                        isCollapsed: true,
                         contentPadding: EdgeInsets.zero,
                       ),
-                      onChanged: (value) {
-                        setState(() {}); // to hide hint when typing
-                      },
+                      onChanged: (_) => setState(() {}),
                     ),
                   ),
-
-                  // Bottom-left 4 images equally spaced
                   Positioned(
                     left: 12,
                     bottom: 8,
                     right: 12,
-                    child: SizedBox(
-                      height: 36,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Image.asset(
-                            "assets/images/icon1.png",
-                            width: 28,
-                            height: 28,
-                          ),
-                          Image.asset(
-                            "assets/images/icon2.png",
-                            width: 28,
-                            height: 28,
-                          ),
-                          Image.asset(
-                            "assets/images/icon3.png",
-                            width: 28,
-                            height: 28,
-                          ),
-                          Image.asset(
-                            "assets/images/icon4.png",
-                            width: 28,
-                            height: 28,
-                          ),
-                        ],
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Image.asset(
+                          "assets/images/icon1.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                        Image.asset(
+                          "assets/images/icon2.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                        Image.asset(
+                          "assets/images/icon3.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                        Image.asset(
+                          "assets/images/icon4.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -337,7 +252,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const SizedBox(height: 16),
 
-          // Translate button center
+          // Translate button
           SizedBox(
             width: 200,
             height: 48,
@@ -371,7 +286,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const Spacer(),
 
-          // Bottom bar (360 x 56)
+          // Bottom nav
           Container(
             width: double.infinity,
             height: 56,
@@ -379,8 +294,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Text Translation (selected)
+              children: const [
                 _BottomNav(
                   iconPath: "assets/images/bottom_text.png",
                   label: "Text Translation",
@@ -417,6 +331,35 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
     );
   }
 
+  Widget _buildLanguageButton(String lang, {required bool isFrom}) {
+    return GestureDetector(
+      onTap: () => _showLanguagePicker(isFrom: isFrom),
+      child: Container(
+        width: 130,
+        height: 40,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              lang,
+              style: GoogleFonts.roboto(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Icon(Icons.arrow_drop_down),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showLanguagePicker({required bool isFrom}) {
     showModalBottomSheet(
       context: context,
@@ -432,10 +375,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                 setState(() {
                   if (isFrom) {
                     fromLanguage = lang;
-                    // prevent choosing same as target
-                    if (fromLanguage == toLanguage) {
-                      // swap
-                    }
                   } else {
                     toLanguage = lang;
                   }
@@ -485,7 +424,6 @@ class _BottomNav extends StatelessWidget {
   }
 }
 
-/// A simple result screen to show translation (you can modify it later)
 class TranslationResultScreen extends StatelessWidget {
   final String sourceText;
   final String translatedText;
@@ -512,6 +450,7 @@ class TranslationResultScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('From: $fromLanguage', style: GoogleFonts.roboto()),
             const SizedBox(height: 8),
