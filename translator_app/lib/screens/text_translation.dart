@@ -27,16 +27,19 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
   final TextEditingController _controller = TextEditingController();
   bool _isTranslating = false;
 
+  /// ✅ Updated translation function
   Future<String> translateText(String text, String from, String to) async {
     final uri = Uri.parse('https://libretranslate.de/translate');
+    // backup server if .de not working:
+    // final uri = Uri.parse('https://translate.argosopentech.com/translate');
 
     final response = await http.post(
       uri,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'q': text,
-        'source': languageCodes[from] ?? 'en',
-        'target': languageCodes[to] ?? 'es',
+        'source': languageCodes[from] ?? 'auto',
+        'target': languageCodes[to] ?? 'en',
         'format': 'text',
       }),
     );
@@ -45,7 +48,9 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       final body = jsonDecode(response.body);
       return body['translatedText'] ?? '';
     } else {
-      throw Exception('Translation failed (${response.statusCode})');
+      throw Exception(
+        'Translation failed (${response.statusCode}): ${response.body}',
+      );
     }
   }
 
