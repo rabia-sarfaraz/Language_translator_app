@@ -24,6 +24,9 @@ dependencies:
   # SVG / Illustrations (if needed later)
   flutter_svg: ^2.0.9
 
+  # HTTP for API calls
+  http: ^0.13.6
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -32,10 +35,28 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # Assets for images, icons, and animations
   assets:
+    # Background shapes / general images
     - assets/images/Ellipse.png
     - assets/images/back.png
     - assets/images/setting.png
+    - assets/images/center_icon.png
+    - assets/images/inside_right.png
+
+    # Text area icons
+    - assets/images/icon1.png
+    - assets/images/icon2.png
+    - assets/images/icon3.png
+    - assets/images/icon4.png
+
+    # Bottom navigation bar icons
+    - assets/images/bottom_text.png
+    - assets/images/bottom_voice.png
+    - assets/images/bottom_dict.png
+    - assets/images/bottom_conv.png
+
+    # Other icons / loaders
     - assets/icons/loader.png
+
+    # Animations
     - assets/animations/translate.json
