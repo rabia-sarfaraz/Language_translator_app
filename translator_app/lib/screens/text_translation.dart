@@ -1,4 +1,3 @@
-// lib/screens/text_translation.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -131,43 +130,31 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          // Language selectors rectangle (centered text + stroke)
+          // Language selectors
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Container(
-              width: double.infinity,
-              height: 60, // ⬅️ slightly increased height
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: Colors.black.withOpacity(0.4), // ⬅️ stroke #000000 40
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildLanguageButton(fromLanguage, isFrom: true),
-                  Container(
-                    width: 46,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        "assets/images/center_icon.png",
-                        width: 20,
-                        height: 20,
-                        fit: BoxFit.contain,
-                      ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildLanguageButton(fromLanguage, isFrom: true),
+                Container(
+                  width: 46,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Center(
+                    child: Image.asset(
+                      "assets/images/center_icon.png",
+                      width: 20,
+                      height: 20,
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  _buildLanguageButton(toLanguage, isFrom: false),
-                ],
-              ),
+                ),
+                _buildLanguageButton(toLanguage, isFrom: false),
+              ],
             ),
           ),
 
@@ -178,13 +165,18 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
               width: double.infinity,
-              height: 235,
+              height: 260, // ⬆️ slightly increased height
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.black.withOpacity(0.25), // stroke
+                  width: 1,
+                ),
               ),
               child: Stack(
                 children: [
+                  // Placeholder (only when empty)
                   if (_controller.text.isEmpty)
                     Positioned(
                       top: 36,
@@ -197,6 +189,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         ),
                       ),
                     ),
+                  // Top right icon
                   Positioned(
                     top: 8,
                     right: 8,
@@ -206,6 +199,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       height: 56,
                     ),
                   ),
+                  // Text field
                   Positioned.fill(
                     top: 36,
                     bottom: 56,
@@ -226,30 +220,29 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       onChanged: (_) => setState(() {}),
                     ),
                   ),
-                  // Bottom icons (moved to right side)
+                  // Bottom icons (shifted to right)
                   Positioned(
                     right: 12,
                     bottom: 8,
+                    left: MediaQuery.of(context).size.width / 2,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Image.asset(
                           "assets/images/icon1.png",
                           width: 28,
                           height: 28,
                         ),
-                        const SizedBox(width: 12),
                         Image.asset(
                           "assets/images/icon2.png",
                           width: 28,
                           height: 28,
                         ),
-                        const SizedBox(width: 12),
                         Image.asset(
                           "assets/images/icon3.png",
                           width: 28,
                           height: 28,
                         ),
-                        const SizedBox(width: 12),
                         Image.asset(
                           "assets/images/icon4.png",
                           width: 28,
@@ -299,7 +292,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const Spacer(),
 
-          // Bottom nav
+          // Bottom nav with active underline
           Container(
             width: double.infinity,
             height: 56,
@@ -355,9 +348,23 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
     );
   }
 
+  // 🔹 Language Button with dropdown below button
   Widget _buildLanguageButton(String lang, {required bool isFrom}) {
-    return GestureDetector(
-      onTap: () => _showLanguagePicker(isFrom: isFrom),
+    return PopupMenuButton<String>(
+      onSelected: (value) {
+        setState(() {
+          if (isFrom) {
+            fromLanguage = value;
+          } else {
+            toLanguage = value;
+          }
+        });
+      },
+      itemBuilder: (context) {
+        return languageCodes.keys.map((String choice) {
+          return PopupMenuItem<String>(value: choice, child: Text(choice));
+        }).toList();
+      },
       child: Container(
         width: 130,
         height: 40,
@@ -380,34 +387,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  void _showLanguagePicker({required bool isFrom}) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        final langs = languageCodes.keys.toList();
-        return ListView.builder(
-          itemCount: langs.length,
-          itemBuilder: (context, index) {
-            final lang = langs[index];
-            return ListTile(
-              title: Text(lang),
-              onTap: () {
-                setState(() {
-                  if (isFrom) {
-                    fromLanguage = lang;
-                  } else {
-                    toLanguage = lang;
-                  }
-                });
-                Navigator.pop(context);
-              },
-            );
-          },
-        );
-      },
     );
   }
 }
