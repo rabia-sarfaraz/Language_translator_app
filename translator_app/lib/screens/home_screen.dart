@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'text_translation.dart'; // 👈 apni dusri screen import karna na bhoolna
+import 'text_translation.dart' as tscreen; // alias import
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const TextTranslationScreen()),
+        MaterialPageRoute(
+          builder: (context) => const tscreen.TextTranslationScreen(),
+        ),
       );
     });
   }
@@ -27,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // White background
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           /// Ellipse image
@@ -35,14 +37,14 @@ class _HomeScreenState extends State<HomeScreen> {
             top: -2.59,
             left: 0,
             child: Image.asset(
-              "assets/images/Ellipse.png", // apna ellipse image yahan rakho
+              "assets/images/Ellipse.png",
               width: 508.36,
               height: 588.24,
               fit: BoxFit.contain,
             ),
           ),
 
-          /// Text Positioned with given properties
+          /// Text Positioned
           Positioned(
             top: 158,
             left: 20,
@@ -73,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          /// Circular Progress Bar (center me)
+          /// Circular Progress Bar
           const Center(
             child: CircularProgressIndicator(
               color: Colors.blue,
