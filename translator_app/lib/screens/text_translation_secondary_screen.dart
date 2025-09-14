@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class TextTranslation1Screen extends StatelessWidget {
+class TextTranslationSecondaryScreen extends StatelessWidget {
   final String originalText;
   final String translatedText;
   final String fromLanguage;
   final String toLanguage;
 
-  const TextTranslation1Screen({
+  const TextTranslationSecondaryScreen({
     super.key,
     required this.originalText,
     required this.translatedText,
@@ -18,13 +18,13 @@ class TextTranslation1Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color primaryBlue = Color(0xFF2076F7);
-    const Color bottomInactive = Color(0xFF6F6F77);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F4),
       body: Column(
         children: [
           const SizedBox(height: 33),
+
           // Top bar
           Container(
             width: double.infinity,
@@ -58,7 +58,7 @@ class TextTranslation1Screen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // ✅ Translated rectangle UI (same as your second screen)
+          // Translated rectangle UI
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(

@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'text_translation.dart'; // correct import
+import 'text_translation_screen.dart'
+    as tscreen; // alias for first translation screen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,10 +16,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
+    // 3 second ke baad navigate
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const TextTranslationScreen()),
+        MaterialPageRoute(
+          builder: (context) => const tscreen.TextTranslationScreen(),
+        ),
       );
     });
   }
@@ -29,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
+          // Ellipse image
           Positioned(
             top: -2.59,
             left: 0,
@@ -39,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
               fit: BoxFit.contain,
             ),
           ),
+
+          // App title
           Positioned(
             top: 158,
             left: 20,
@@ -68,6 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+
+          // Centered Circular Progress
           const Center(
             child: CircularProgressIndicator(
               color: Colors.blue,
