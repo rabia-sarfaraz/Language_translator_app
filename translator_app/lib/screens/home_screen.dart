@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'text_translation_screen.dart'
-    as tscreen; // alias for first translation screen
+import 'text_translation.dart'; // 👈 apni dusri screen import karna na bhoolna
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,13 +15,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    // 3 second ke baad navigate
+    // 3 second baad agli screen pe navigate
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const tscreen.TextTranslationScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const TextTranslationScreen()),
       );
     });
   }
@@ -30,22 +27,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, // White background
       body: Stack(
         children: [
-          // Ellipse image
+          /// Ellipse image
           Positioned(
             top: -2.59,
             left: 0,
             child: Image.asset(
-              "assets/images/Ellipse.png",
+              "assets/images/Ellipse.png", // apna ellipse image yahan rakho
               width: 508.36,
               height: 588.24,
               fit: BoxFit.contain,
             ),
           ),
 
-          // App title
+          /// Text Positioned with given properties
           Positioned(
             top: 158,
             left: 20,
@@ -76,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Centered Circular Progress
+          /// Circular Progress Bar (center me)
           const Center(
             child: CircularProgressIndicator(
               color: Colors.blue,

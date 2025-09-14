@@ -13,14 +13,14 @@ const Map<String, String> languageCodes = {
   "Arabic": "ar",
 };
 
-class TextTranslationScreen extends StatefulWidget {
-  const TextTranslationScreen({super.key});
+class TextTranslation1Screen extends StatefulWidget {
+  const TextTranslation1Screen({super.key});
 
   @override
-  State<TextTranslationScreen> createState() => _TextTranslationScreenState();
+  State<TextTranslation1Screen> createState() => _TextTranslation1ScreenState();
 }
 
-class _TextTranslationScreenState extends State<TextTranslationScreen> {
+class _TextTranslation1ScreenState extends State<TextTranslation1Screen> {
   String fromLanguage = "English";
   String toLanguage = "Spanish";
 
@@ -67,7 +67,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
       setState(() {
         _isTranslating = false;
-        translatedText = translated;
+        translatedText = translated; // ✅ show inside new rectangle
       });
     } catch (e) {
       setState(() => _isTranslating = false);
@@ -87,6 +87,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       body: Column(
         children: [
           const SizedBox(height: 33),
+
           // Top bar
           Container(
             width: double.infinity,
@@ -118,6 +119,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
               ],
             ),
           ),
+
           const SizedBox(height: 24),
 
           // Language selectors
@@ -178,6 +180,15 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         ),
                       ),
                     ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Image.asset(
+                      "assets/images/inside_right.png",
+                      width: 56,
+                      height: 56,
+                    ),
+                  ),
                   Positioned.fill(
                     top: 36,
                     bottom: 56,
@@ -196,6 +207,37 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         contentPadding: EdgeInsets.zero,
                       ),
                       onChanged: (_) => setState(() {}),
+                    ),
+                  ),
+                  // Bottom icons (right side)
+                  Positioned(
+                    right: 12,
+                    bottom: 8,
+                    left: MediaQuery.of(context).size.width / 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Image.asset(
+                          "assets/images/icon1.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                        Image.asset(
+                          "assets/images/icon2.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                        Image.asset(
+                          "assets/images/icon3.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                        Image.asset(
+                          "assets/images/icon4.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -237,9 +279,8 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             ),
           ),
 
-          const SizedBox(height: 24),
-
-          // Result box
+          const SizedBox(height: 24), // 3 line spacing
+          // ✅ New translated result box
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -249,15 +290,125 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                 color: primaryBlue,
                 borderRadius: BorderRadius.circular(10),
               ),
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                translatedText,
-                style: GoogleFonts.roboto(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+              child: Stack(
+                children: [
+                  // Left top image (replace with your path)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Image.asset(
+                      "assets/images/inside_left.png",
+                      width: 56,
+                      height: 56,
+                    ),
+                  ),
+                  // Translated text
+                  Positioned(
+                    top: 60, // spacing from top
+                    left: 12,
+                    right: 12,
+                    child: Text(
+                      translatedText,
+                      textAlign: TextAlign.left,
+                      style: GoogleFonts.roboto(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        height: 1.0, // 100% line height
+                      ),
+                    ),
+                  ),
+                  // Bottom icons (shifted to left, white)
+                  Positioned(
+                    left: 12,
+                    bottom: 8,
+                    right: MediaQuery.of(context).size.width / 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Image.asset(
+                          "assets/images/icon1.png",
+                          width: 28,
+                          height: 28,
+                          color: Colors.white,
+                        ),
+                        Image.asset(
+                          "assets/images/icon2.png",
+                          width: 28,
+                          height: 28,
+                          color: Colors.white,
+                        ),
+                        Image.asset(
+                          "assets/images/icon3.png",
+                          width: 28,
+                          height: 28,
+                          color: Colors.white,
+                        ),
+                        Image.asset(
+                          "assets/images/icon4.png",
+                          width: 28,
+                          height: 28,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
+            ),
+          ),
+
+          const Spacer(),
+
+          // Bottom nav
+          Container(
+            width: double.infinity,
+            height: 56,
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  children: [
+                    Container(height: 2, width: 40, color: primaryBlue),
+                    const SizedBox(height: 4),
+                    Image.asset(
+                      "assets/images/bottom_text.png",
+                      width: 20,
+                      height: 20,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Text Translation",
+                      style: GoogleFonts.roboto(
+                        fontSize: 10,
+                        color: primaryBlue,
+                      ),
+                    ),
+                  ],
+                ),
+                const _BottomNav(
+                  iconPath: "assets/images/bottom_voice.png",
+                  label: "Voice Translation",
+                  active: false,
+                  activeColor: primaryBlue,
+                  inactiveColor: bottomInactive,
+                ),
+                const _BottomNav(
+                  iconPath: "assets/images/bottom_dict.png",
+                  label: "Dictionary",
+                  active: false,
+                  activeColor: primaryBlue,
+                  inactiveColor: bottomInactive,
+                ),
+                const _BottomNav(
+                  iconPath: "assets/images/bottom_conv.png",
+                  label: "Conversation",
+                  active: false,
+                  activeColor: primaryBlue,
+                  inactiveColor: bottomInactive,
+                ),
+              ],
             ),
           ),
         ],
@@ -265,7 +416,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
     );
   }
 
-  // Language Button Widget
+  // 🔹 Language Button
   Widget _buildLanguageButton(String lang, {required bool isFrom}) {
     return PopupMenuButton<String>(
       onSelected: (value) {
@@ -278,12 +429,9 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
         });
       },
       itemBuilder: (context) {
-        return languageCodes.keys
-            .map(
-              (String choice) =>
-                  PopupMenuItem<String>(value: choice, child: Text(choice)),
-            )
-            .toList();
+        return languageCodes.keys.map((String choice) {
+          return PopupMenuItem<String>(value: choice, child: Text(choice));
+        }).toList();
       },
       child: Container(
         width: 130,
@@ -307,6 +455,41 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _BottomNav extends StatelessWidget {
+  final String iconPath;
+  final String label;
+  final bool active;
+  final Color activeColor;
+  final Color inactiveColor;
+
+  const _BottomNav({
+    required this.iconPath,
+    required this.label,
+    required this.active,
+    required this.activeColor,
+    required this.inactiveColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(iconPath, width: 20, height: 20),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: GoogleFonts.roboto(
+            fontSize: 10,
+            fontWeight: FontWeight.w400,
+            color: active ? activeColor : inactiveColor,
+          ),
+        ),
+      ],
     );
   }
 }
