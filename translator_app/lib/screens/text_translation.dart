@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'text_translation1.dart'; // ✅ import second screen
 
 /// Full language codes
 const Map<String, String> languageCodes = {
@@ -29,7 +30,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
   String toLanguage = "Spanish";
 
   final TextEditingController _controller = TextEditingController();
-  String? translatedText;
   bool _isTranslating = false;
 
   /// Multiple LibreTranslate servers for fallback
@@ -80,17 +80,26 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
     setState(() {
       _isTranslating = true;
-      translatedText = null;
     });
 
     try {
       final translated = await translateText(text, fromLanguage, toLanguage);
       if (!mounted) return;
 
-      setState(() {
-        _isTranslating = false;
-        translatedText = translated;
-      });
+      setState(() => _isTranslating = false);
+
+      // ✅ Navigate to second screen with translated text
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TextTranslation1Screen(
+            originalText: text,
+            translatedText: translated,
+            fromLanguage: fromLanguage,
+            toLanguage: toLanguage,
+          ),
+        ),
+      );
     } catch (e) {
       setState(() => _isTranslating = false);
       ScaffoldMessenger.of(
@@ -174,7 +183,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          // Input + output box
+          // Input + box
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -190,7 +199,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
               ),
               child: Stack(
                 children: [
-                  // Hint
                   if (_controller.text.isEmpty)
                     Positioned(
                       top: 36,
@@ -203,8 +211,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         ),
                       ),
                     ),
-
-                  // Inside icon
                   Positioned(
                     top: 8,
                     right: 8,
@@ -214,8 +220,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       height: 56,
                     ),
                   ),
-
-                  // Input text
                   Positioned.fill(
                     top: 8,
                     bottom: 130,
@@ -234,54 +238,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         contentPadding: EdgeInsets.zero,
                       ),
                       onChanged: (_) => setState(() {}),
-                    ),
-                  ),
-
-                  // Output text
-                  if (translatedText != null)
-                    Positioned(
-                      bottom: 56,
-                      left: 12,
-                      right: 12,
-                      child: Text(
-                        translatedText!,
-                        style: GoogleFonts.roboto(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-
-                  // Bottom icons
-                  Positioned(
-                    right: 12,
-                    bottom: 8,
-                    left: MediaQuery.of(context).size.width / 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image.asset(
-                          "assets/images/icon1.png",
-                          width: 28,
-                          height: 28,
-                        ),
-                        Image.asset(
-                          "assets/images/icon2.png",
-                          width: 28,
-                          height: 28,
-                        ),
-                        Image.asset(
-                          "assets/images/icon3.png",
-                          width: 28,
-                          height: 28,
-                        ),
-                        Image.asset(
-                          "assets/images/icon4.png",
-                          width: 28,
-                          height: 28,
-                        ),
-                      ],
                     ),
                   ),
                 ],
