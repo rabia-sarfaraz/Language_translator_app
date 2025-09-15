@@ -1,3 +1,4 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'screens/splash_screen.dart';
@@ -26,7 +27,6 @@ class TranslatorApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/home': (context) => const HomeScreen(),
         '/text_translation': (context) => const TextTranslationScreen(),
-        // 🚫 removed /text_translation1 (we pass arguments directly with Navigator.push)
       },
     );
   }

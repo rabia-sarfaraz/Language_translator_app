@@ -1,18 +1,13 @@
-import 'dart:convert';
+// text_translation.dart (First Screen)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 import 'text_translation1.dart';
 
-/// Language codes mapping
-const Map<String, String> languageCodes = {
-  "English": "en",
-  "Spanish": "es",
-  "Urdu": "ur",
-  "French": "fr",
-  "German": "de",
-  "Arabic": "ar",
-};
+// fake translate function (replace with your API call)
+Future<String> translateText(String text, String from, String to) async {
+  await Future.delayed(const Duration(seconds: 2)); // simulate delay
+  return "[$to translation of] $text"; // replace with actual translation
+}
 
 class TextTranslationScreen extends StatefulWidget {
   const TextTranslationScreen({super.key});
@@ -22,32 +17,10 @@ class TextTranslationScreen extends StatefulWidget {
 }
 
 class _TextTranslationScreenState extends State<TextTranslationScreen> {
-  String fromLanguage = "English";
-  String toLanguage = "Spanish";
   final TextEditingController _controller = TextEditingController();
+  String fromLanguage = "English";
+  String toLanguage = "Urdu";
   bool _isTranslating = false;
-
-  Future<String> translateText(String text, String from, String to) async {
-    final uri = Uri.parse('https://libretranslate.de/translate');
-
-    final response = await http.post(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'q': text,
-        'source': languageCodes[from] ?? 'en',
-        'target': languageCodes[to] ?? 'es',
-        'format': 'text',
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final body = jsonDecode(response.body);
-      return body['translatedText'] ?? '';
-    } else {
-      throw Exception('Translation failed (${response.statusCode})');
-    }
-  }
 
   void _onTranslatePressed() async {
     final text = _controller.text.trim();
@@ -66,7 +39,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
       setState(() => _isTranslating = false);
 
-      // ✅ Navigate to next screen with translated text
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -95,7 +67,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       body: Column(
         children: [
           const SizedBox(height: 33),
-
           // Top bar
           Container(
             width: double.infinity,
@@ -103,41 +74,43 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             color: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
-              children: [
-                Text(
-                  "Translator",
-                  style: GoogleFonts.roboto(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Language selectors
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildLanguageButton(fromLanguage, isFrom: true),
-                _buildLanguageButton(toLanguage, isFrom: false),
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Image.asset(
+                        "assets/images/back.png",
+                        height: 24,
+                        width: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      "Text Translation",
+                      style: GoogleFonts.roboto(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                Image.asset("assets/images/setting.png", height: 24, width: 24),
               ],
             ),
           ),
 
           const SizedBox(height: 24),
 
-          // Input box
+          // Text box
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
               width: double.infinity,
-              height: 200,
+              height: 260,
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -149,91 +122,41 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
               child: TextField(
                 controller: _controller,
                 maxLines: null,
-                style: GoogleFonts.roboto(fontSize: 14, color: Colors.black),
+                expands: true,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
-                  hintText: "Enter text to translate...",
-                  contentPadding: EdgeInsets.all(12),
+                  hintText: "Enter text here...",
                 ),
               ),
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
 
           // Translate button
-          SizedBox(
-            width: 200,
-            height: 48,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ElevatedButton(
               onPressed: _isTranslating ? null : _onTranslatePressed,
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryBlue,
+                minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: _isTranslating
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
+                  ? const CircularProgressIndicator(color: Colors.white)
                   : Text(
                       "Translate",
                       style: GoogleFonts.roboto(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
                         color: Colors.white,
                       ),
                     ),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildLanguageButton(String lang, {required bool isFrom}) {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        setState(() {
-          if (isFrom) {
-            fromLanguage = value;
-          } else {
-            toLanguage = value;
-          }
-        });
-      },
-      itemBuilder: (context) {
-        return languageCodes.keys.map((String choice) {
-          return PopupMenuItem<String>(value: choice, child: Text(choice));
-        }).toList();
-      },
-      child: Container(
-        width: 130,
-        height: 40,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              lang,
-              style: GoogleFonts.roboto(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const Icon(Icons.keyboard_arrow_down),
-          ],
-        ),
       ),
     );
   }
