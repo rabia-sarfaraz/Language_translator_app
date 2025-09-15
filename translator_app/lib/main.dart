@@ -27,14 +27,7 @@ class TranslatorApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/home': (context) => const HomeScreen(),
         '/text_translation': (context) => const TextTranslationScreen(),
-        // ✅ Pass arguments to next screen
-        '/text_translation1': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments as Map;
-          return TextTranslation1Screen(
-            originalText: args['originalText'],
-            translatedText: args['translatedText'],
-          );
-        },
+        '/text_translation1': (context) => const TextTranslation1Screen(),
       },
     );
   }

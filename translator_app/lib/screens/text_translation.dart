@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'text_translation1.dart'; // ✅ Import second screen
 
 /// Full language codes
 const Map<String, String> languageCodes = {
@@ -31,15 +32,8 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
   final TextEditingController _controller = TextEditingController();
   bool _isTranslating = false;
 
-  /// Multiple LibreTranslate servers for fallback
-  final List<String> _servers = [
-    "https://translate.astian.org/translate",
-    "https://libretranslate.de/translate",
-    "https://translate.fedilab.app/translate",
-  ];
-
-  /// Translation with fallback
   Future<String> translateText(String text, String from, String to) async {
+    final uri = Uri.parse("https://libretranslate.de/translate");
     final body = {
       'q': text,
       'source': languageCodes[from] ?? 'auto',
@@ -47,25 +41,18 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       'format': 'text',
     };
 
-    for (final server in _servers) {
-      try {
-        final uri = Uri.parse(server);
-        final response = await http.post(
-          uri,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(body),
-        );
+    final response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
 
-        if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
-          return data['translatedText'] ?? '';
-        }
-      } catch (_) {
-        // try next server
-      }
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['translatedText'] ?? '';
+    } else {
+      throw Exception("Translation failed: ${response.statusCode}");
     }
-
-    throw Exception("All servers failed. Please try again later.");
   }
 
   void _onTranslatePressed() async {
@@ -85,11 +72,13 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
       setState(() => _isTranslating = false);
 
-      // ✅ Navigate to second screen with data
-      Navigator.pushNamed(
+      // ✅ Navigate to second screen with result
+      Navigator.push(
         context,
-        '/text_translation1',
-        arguments: {'originalText': text, 'translatedText': translated},
+        MaterialPageRoute(
+          builder: (context) =>
+              TextTranslation1Screen(translatedText: translated),
+        ),
       );
     } catch (e) {
       setState(() => _isTranslating = false);
@@ -163,7 +152,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       "assets/images/center_icon.png",
                       width: 20,
                       height: 20,
-                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
@@ -188,15 +176,50 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                   width: 1,
                 ),
               ),
-              child: TextField(
-                controller: _controller,
-                maxLines: null,
-                style: GoogleFonts.roboto(fontSize: 14, color: Colors.black),
-                decoration: const InputDecoration(
-                  hintText: "Text here to translate...",
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.all(12),
-                ),
+              child: Stack(
+                children: [
+                  if (_controller.text.isEmpty)
+                    Positioned(
+                      top: 36,
+                      left: 12,
+                      child: Text(
+                        "Text here to translate...",
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          color: const Color(0xFF979797),
+                        ),
+                      ),
+                    ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Image.asset(
+                      "assets/images/inside_right.png",
+                      width: 56,
+                      height: 56,
+                    ),
+                  ),
+                  Positioned.fill(
+                    top: 8,
+                    bottom: 130,
+                    left: 12,
+                    right: 12,
+                    child: TextField(
+                      controller: _controller,
+                      maxLines: null,
+                      style: GoogleFonts.roboto(
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isCollapsed: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -234,48 +257,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                     ),
             ),
           ),
-
-          const Spacer(),
-
-          // Bottom nav
-          Container(
-            width: double.infinity,
-            height: 56,
-            color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                _BottomNav(
-                  iconPath: "assets/images/bottom_text.png",
-                  label: "Text Translation",
-                  active: true,
-                  activeColor: primaryBlue,
-                  inactiveColor: bottomInactive,
-                ),
-                _BottomNav(
-                  iconPath: "assets/images/bottom_voice.png",
-                  label: "Voice Translation",
-                  active: false,
-                  activeColor: primaryBlue,
-                  inactiveColor: bottomInactive,
-                ),
-                _BottomNav(
-                  iconPath: "assets/images/bottom_dict.png",
-                  label: "Dictionary",
-                  active: false,
-                  activeColor: primaryBlue,
-                  inactiveColor: bottomInactive,
-                ),
-                _BottomNav(
-                  iconPath: "assets/images/bottom_conv.png",
-                  label: "Conversation",
-                  active: false,
-                  activeColor: primaryBlue,
-                  inactiveColor: bottomInactive,
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -283,15 +264,19 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
   Widget _buildLanguageButton(String lang, {required bool isFrom}) {
     return PopupMenuButton<String>(
-      onSelected: (value) =>
-          setState(() => isFrom ? fromLanguage = value : toLanguage = value),
+      onSelected: (value) {
+        setState(() {
+          if (isFrom) {
+            fromLanguage = value;
+          } else {
+            toLanguage = value;
+          }
+        });
+      },
       itemBuilder: (context) {
-        return languageCodes.keys
-            .map(
-              (String choice) =>
-                  PopupMenuItem<String>(value: choice, child: Text(choice)),
-            )
-            .toList();
+        return languageCodes.keys.map((String choice) {
+          return PopupMenuItem<String>(value: choice, child: Text(choice));
+        }).toList();
       },
       child: Container(
         width: 130,
@@ -303,43 +288,18 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text(lang), const Icon(Icons.keyboard_arrow_down)],
+          children: [
+            Text(
+              lang,
+              style: GoogleFonts.roboto(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Icon(Icons.keyboard_arrow_down),
+          ],
         ),
       ),
-    );
-  }
-}
-
-class _BottomNav extends StatelessWidget {
-  final String iconPath;
-  final String label;
-  final bool active;
-  final Color activeColor;
-  final Color inactiveColor;
-
-  const _BottomNav({
-    required this.iconPath,
-    required this.label,
-    required this.active,
-    required this.activeColor,
-    required this.inactiveColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Image.asset(iconPath, width: 20, height: 20),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: GoogleFonts.roboto(
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            color: active ? activeColor : inactiveColor,
-          ),
-        ),
-      ],
     );
   }
 }
