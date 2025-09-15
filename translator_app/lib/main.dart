@@ -1,9 +1,9 @@
-// main.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/text_translation.dart';
+import 'screens/text_translation1.dart';
 
 void main() {
   runApp(const TranslatorApp());
@@ -27,6 +27,14 @@ class TranslatorApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/home': (context) => const HomeScreen(),
         '/text_translation': (context) => const TextTranslationScreen(),
+        // ✅ Pass arguments to next screen
+        '/text_translation1': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map;
+          return TextTranslation1Screen(
+            originalText: args['originalText'],
+            translatedText: args['translatedText'],
+          );
+        },
       },
     );
   }
