@@ -174,7 +174,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          // Input + output box
+          // Input box only (output removed from here)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -236,54 +236,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       onChanged: (_) => setState(() {}),
                     ),
                   ),
-
-                  // Output text
-                  if (translatedText != null)
-                    Positioned(
-                      bottom: 56,
-                      left: 12,
-                      right: 12,
-                      child: Text(
-                        translatedText!,
-                        style: GoogleFonts.roboto(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-
-                  // Bottom icons
-                  Positioned(
-                    right: 12,
-                    bottom: 8,
-                    left: MediaQuery.of(context).size.width / 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image.asset(
-                          "assets/images/icon1.png",
-                          width: 28,
-                          height: 28,
-                        ),
-                        Image.asset(
-                          "assets/images/icon2.png",
-                          width: 28,
-                          height: 28,
-                        ),
-                        Image.asset(
-                          "assets/images/icon3.png",
-                          width: 28,
-                          height: 28,
-                        ),
-                        Image.asset(
-                          "assets/images/icon4.png",
-                          width: 28,
-                          height: 28,
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -322,6 +274,87 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                     ),
             ),
           ),
+
+          const SizedBox(height: 24),
+
+          // 🔹 New blue result box
+          if (translatedText != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Container(
+                width: double.infinity,
+                height: 260,
+                decoration: BoxDecoration(
+                  color: primaryBlue,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  children: [
+                    // Top-left image
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Image.asset(
+                        "assets/images/inside_left.png",
+                        width: 56,
+                        height: 56,
+                      ),
+                    ),
+
+                    // Translated text
+                    Positioned(
+                      top: 60,
+                      left: 12,
+                      right: 12,
+                      child: Text(
+                        translatedText!,
+                        style: GoogleFonts.roboto(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+
+                    // Bottom icons (white, left side)
+                    Positioned(
+                      left: 12,
+                      bottom: 8,
+                      right: MediaQuery.of(context).size.width / 2,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Image.asset(
+                            "assets/images/icon1.png",
+                            width: 28,
+                            height: 28,
+                            color: Colors.white,
+                          ),
+                          Image.asset(
+                            "assets/images/icon2.png",
+                            width: 28,
+                            height: 28,
+                            color: Colors.white,
+                          ),
+                          Image.asset(
+                            "assets/images/icon3.png",
+                            width: 28,
+                            height: 28,
+                            color: Colors.white,
+                          ),
+                          Image.asset(
+                            "assets/images/icon4.png",
+                            width: 28,
+                            height: 28,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
 
           const Spacer(),
 
