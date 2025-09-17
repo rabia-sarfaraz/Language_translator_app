@@ -109,9 +109,14 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
     }
   }
 
+  /// Fixed listening method
   void _listen() async {
     if (!_isListening) {
-      bool available = await _speech.initialize();
+      bool available = await _speech.initialize(
+        onStatus: (status) => print("onStatus: $status"),
+        onError: (error) => print("onError: $error"),
+      );
+
       if (available) {
         setState(() => _isListening = true);
         _speech.listen(
@@ -120,7 +125,14 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
               _controller.text = result.recognizedWords;
             });
           },
+          listenFor: const Duration(seconds: 30),
+          pauseFor: const Duration(seconds: 5),
+          partialResults: true,
+          localeId: "en_US", // yahan apni language code use karo
+          listenMode: stt.ListenMode.confirmation,
         );
+      } else {
+        print("The user has denied the use of speech recognition.");
       }
     } else {
       setState(() => _isListening = false);
@@ -233,7 +245,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                       ),
                     ),
 
-                  // Mic icon (for recording)
+                  // Mic icon
                   Positioned(
                     top: 8,
                     right: 8,
@@ -304,7 +316,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          // Result blue box
+          // Result box
           if (translatedText != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -317,7 +329,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                 ),
                 child: Stack(
                   children: [
-                    // Top-left image
                     Positioned(
                       top: 8,
                       left: 8,
@@ -327,8 +338,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                         height: 56,
                       ),
                     ),
-
-                    // Translated text
                     Positioned.fill(
                       top: 60,
                       left: 12,
@@ -344,42 +353,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                         ),
                       ),
                     ),
-
-                    // Bottom icons
-                    Positioned(
-                      left: 12,
-                      bottom: 8,
-                      right: MediaQuery.of(context).size.width / 2,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Image.asset(
-                            "assets/images/icon1.png",
-                            width: 28,
-                            height: 28,
-                            color: Colors.white,
-                          ),
-                          Image.asset(
-                            "assets/images/icon2.png",
-                            width: 28,
-                            height: 28,
-                            color: Colors.white,
-                          ),
-                          Image.asset(
-                            "assets/images/icon3.png",
-                            width: 28,
-                            height: 28,
-                            color: Colors.white,
-                          ),
-                          Image.asset(
-                            "assets/images/icon4.png",
-                            width: 28,
-                            height: 28,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -387,7 +360,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const Spacer(),
 
-          // Bottom nav (same as before)
+          // Bottom nav
           Container(
             width: double.infinity,
             height: 56,
