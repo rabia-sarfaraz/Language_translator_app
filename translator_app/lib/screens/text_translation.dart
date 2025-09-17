@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
+import 'voice_translation.dart'; // 👈 import added
+
 /// Full language codes
 const Map<String, String> languageCodes = {
   "English": "en",
@@ -174,7 +176,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          // Input box only (output removed from here)
+          // Input box
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -190,7 +192,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
               ),
               child: Stack(
                 children: [
-                  // Hint
                   if (_controller.text.isEmpty)
                     Positioned(
                       top: 36,
@@ -203,8 +204,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         ),
                       ),
                     ),
-
-                  // Inside icon
                   Positioned(
                     top: 8,
                     right: 8,
@@ -214,8 +213,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       height: 56,
                     ),
                   ),
-
-                  // Input text
                   Positioned.fill(
                     top: 8,
                     bottom: 130,
@@ -277,7 +274,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          // 🔹 New blue result box
+          // Result box
           if (translatedText != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -290,7 +287,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                 ),
                 child: Stack(
                   children: [
-                    // Top-left image
                     Positioned(
                       top: 8,
                       left: 8,
@@ -300,8 +296,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         height: 56,
                       ),
                     ),
-
-                    // Translated text
                     Positioned(
                       top: 60,
                       left: 12,
@@ -315,8 +309,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         ),
                       ),
                     ),
-
-                    // Bottom icons (white, left side)
                     Positioned(
                       left: 12,
                       bottom: 8,
@@ -385,21 +377,29 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                     ),
                   ],
                 ),
-                const _BottomNav(
+                _BottomNav(
                   iconPath: "assets/images/bottom_voice.png",
                   label: "Voice Translation",
                   active: false,
                   activeColor: primaryBlue,
                   inactiveColor: bottomInactive,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VoiceTranslationScreen(),
+                      ),
+                    );
+                  },
                 ),
-                const _BottomNav(
+                _BottomNav(
                   iconPath: "assets/images/bottom_dict.png",
                   label: "Dictionary",
                   active: false,
                   activeColor: primaryBlue,
                   inactiveColor: bottomInactive,
                 ),
-                const _BottomNav(
+                _BottomNav(
                   iconPath: "assets/images/bottom_conv.png",
                   label: "Conversation",
                   active: false,
@@ -462,6 +462,7 @@ class _BottomNav extends StatelessWidget {
   final bool active;
   final Color activeColor;
   final Color inactiveColor;
+  final VoidCallback? onTap; // 👈 added
 
   const _BottomNav({
     required this.iconPath,
@@ -469,24 +470,28 @@ class _BottomNav extends StatelessWidget {
     required this.active,
     required this.activeColor,
     required this.inactiveColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Image.asset(iconPath, width: 20, height: 20),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: GoogleFonts.roboto(
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            color: active ? activeColor : inactiveColor,
+    return GestureDetector(
+      onTap: onTap, // 👈 now clickable
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(iconPath, width: 20, height: 20),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: GoogleFonts.roboto(
+              fontSize: 10,
+              fontWeight: FontWeight.w400,
+              color: active ? activeColor : inactiveColor,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
