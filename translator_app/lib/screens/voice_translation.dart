@@ -109,7 +109,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
     }
   }
 
-  /// Fixed listening method
+  /// Listening method FIXED
   void _listen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
@@ -125,14 +125,14 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
               _controller.text = result.recognizedWords;
             });
           },
-          listenFor: const Duration(seconds: 30),
+          listenFor: const Duration(seconds: 20),
           pauseFor: const Duration(seconds: 5),
           partialResults: true,
-          localeId: "en_US", // yahan apni language code use karo
+          localeId: "en_US", // 👈 set language locale (English default)
           listenMode: stt.ListenMode.confirmation,
         );
       } else {
-        print("The user has denied the use of speech recognition.");
+        print("Speech recognition not available.");
       }
     } else {
       setState(() => _isListening = false);
