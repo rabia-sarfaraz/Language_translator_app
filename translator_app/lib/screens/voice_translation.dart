@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:permission_handler/permission_handler.dart'; // 👈 NEW
 
 /// Full language codes
 const Map<String, String> languageCodes = {
@@ -109,8 +110,19 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
     }
   }
 
-  /// Listening method FIXED
+  /// ✅ Fixed listening method with runtime permission
   void _listen() async {
+    // Step 1: Ask for mic permission
+    var status = await Permission.microphone.request();
+
+    if (status.isDenied || status.isPermanentlyDenied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Microphone permission required")),
+      );
+      return;
+    }
+
+    // Step 2: Start speech
     if (!_isListening) {
       bool available = await _speech.initialize(
         onStatus: (status) => print("onStatus: $status"),
@@ -128,7 +140,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
           listenFor: const Duration(seconds: 20),
           pauseFor: const Duration(seconds: 5),
           partialResults: true,
-          localeId: "en_US", // 👈 set language locale (English default)
+          localeId: "en_US", // 👈 change according to selected fromLanguage
           listenMode: stt.ListenMode.confirmation,
         );
       } else {
@@ -215,7 +227,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          // Input box (voice captured text will appear here)
+          // Input box
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -231,7 +243,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
               ),
               child: Stack(
                 children: [
-                  // Hint
                   if (_controller.text.isEmpty)
                     Positioned(
                       top: 36,
@@ -245,7 +256,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                       ),
                     ),
 
-                  // Mic icon
+                  // Mic
                   Positioned(
                     top: 8,
                     right: 8,
@@ -316,7 +327,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          // Result box
+          // Result
           if (translatedText != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
