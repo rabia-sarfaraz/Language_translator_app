@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:permission_handler/permission_handler.dart'; // 👈 NEW
+import 'package:permission_handler/permission_handler.dart';
 
 /// Full language codes
 const Map<String, String> languageCodes = {
@@ -110,19 +110,17 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
     }
   }
 
-  /// ✅ Fixed listening method with runtime permission
+  /// Listening method with runtime permission
   void _listen() async {
-    // Step 1: Ask for mic permission
+    // Ask mic permission
     var status = await Permission.microphone.request();
-
-    if (status.isDenied || status.isPermanentlyDenied) {
+    if (!status.isGranted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Microphone permission required")),
       );
       return;
     }
 
-    // Step 2: Start speech
     if (!_isListening) {
       bool available = await _speech.initialize(
         onStatus: (status) => print("onStatus: $status"),
@@ -140,7 +138,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
           listenFor: const Duration(seconds: 20),
           pauseFor: const Duration(seconds: 5),
           partialResults: true,
-          localeId: "en_US", // 👈 change according to selected fromLanguage
+          localeId: "en_US", // 👈 default English, change if needed
           listenMode: stt.ListenMode.confirmation,
         );
       } else {
@@ -255,8 +253,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                         ),
                       ),
                     ),
-
-                  // Mic
                   Positioned(
                     top: 8,
                     right: 8,
@@ -269,8 +265,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                       ),
                     ),
                   ),
-
-                  // Recognized text
                   Positioned.fill(
                     top: 8,
                     bottom: 130,
@@ -327,7 +321,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          // Result
+          // Result box
           if (translatedText != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
