@@ -27,6 +27,9 @@ dependencies:
   # HTTP for API calls (match google_fonts requirement)
   http: ^1.5.0
 
+  # 🔹 NEW: Speech to Text (for voice input)
+  speech_to_text: ^6.6.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -55,6 +58,7 @@ flutter:
     - assets/images/bottom_dict.png
     - assets/images/bottom_conv.png
     - assets/images/inside_left.png
+
     # Other icons / loaders
     - assets/icons/loader.png
 
