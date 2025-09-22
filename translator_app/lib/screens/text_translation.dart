@@ -121,10 +121,15 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
               children: [
                 Row(
                   children: [
-                    Image.asset(
-                      "assets/images/back.png",
-                      height: 24,
-                      width: 24,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context); // back navigation
+                      },
+                      child: Image.asset(
+                        "assets/images/back.png",
+                        height: 24,
+                        width: 24,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Text(
@@ -190,19 +195,30 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
               ),
               child: Stack(
                 children: [
-                  // Hint
-                  if (_controller.text.isEmpty)
-                    Positioned(
-                      top: 36,
-                      left: 12,
-                      child: Text(
-                        "Text here to translate...",
-                        style: GoogleFonts.roboto(
-                          fontSize: 14,
+                  // Placeholder OR input text same place
+                  Positioned(
+                    top: 36,
+                    left: 12,
+                    right: 12,
+                    child: TextField(
+                      controller: _controller,
+                      maxLines: null,
+                      style: GoogleFonts.roboto(
+                        fontSize: 18, // bigger size
+                        fontWeight: FontWeight.bold, // bold text
+                        color: Colors.black,
+                      ),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        isCollapsed: true,
+                        hintText: "Text here to translate...",
+                        hintStyle: GoogleFonts.roboto(
+                          fontSize: 16,
                           color: const Color(0xFF979797),
                         ),
                       ),
                     ),
+                  ),
 
                   // Inside icon
                   Positioned(
@@ -212,28 +228,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       "assets/images/inside_right.png",
                       width: 56,
                       height: 56,
-                    ),
-                  ),
-
-                  // Input text
-                  Positioned.fill(
-                    top: 8,
-                    bottom: 130,
-                    left: 12,
-                    right: 12,
-                    child: TextField(
-                      controller: _controller,
-                      maxLines: null,
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        color: Colors.black,
-                      ),
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        isCollapsed: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      onChanged: (_) => setState(() {}),
                     ),
                   ),
 
@@ -334,16 +328,16 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       ),
                     ),
 
-                    // Translated text
+                    // Translated text (thoda neeche)
                     Positioned(
-                      top: 36,
+                      top: 70,
                       left: 12,
                       right: 12,
                       child: Text(
                         translatedText!,
                         style: GoogleFonts.roboto(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 20, // bigger size
+                          fontWeight: FontWeight.bold, // bold
                           color: Colors.white,
                         ),
                       ),
@@ -418,12 +412,17 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                     ),
                   ],
                 ),
-                const _BottomNav(
-                  iconPath: "assets/images/bottom_voice.png",
-                  label: "Voice Translation",
-                  active: false,
-                  activeColor: primaryBlue,
-                  inactiveColor: bottomInactive,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, "/voice_translation");
+                  },
+                  child: const _BottomNav(
+                    iconPath: "assets/images/bottom_voice.png",
+                    label: "Voice Translation",
+                    active: false,
+                    activeColor: primaryBlue,
+                    inactiveColor: bottomInactive,
+                  ),
                 ),
                 const _BottomNav(
                   iconPath: "assets/images/bottom_dict.png",
