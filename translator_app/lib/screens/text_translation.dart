@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
-import 'voice_translation.dart'; // 👈 import added
-
 /// Full language codes
 const Map<String, String> languageCodes = {
   "English": "en",
@@ -192,6 +190,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
               ),
               child: Stack(
                 children: [
+                  // Hint
                   if (_controller.text.isEmpty)
                     Positioned(
                       top: 36,
@@ -204,6 +203,8 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         ),
                       ),
                     ),
+
+                  // Inside icon
                   Positioned(
                     top: 8,
                     right: 8,
@@ -213,6 +214,8 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                       height: 56,
                     ),
                   ),
+
+                  // Input text
                   Positioned.fill(
                     top: 8,
                     bottom: 130,
@@ -231,6 +234,38 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         contentPadding: EdgeInsets.zero,
                       ),
                       onChanged: (_) => setState(() {}),
+                    ),
+                  ),
+
+                  // Bottom icons
+                  Positioned(
+                    right: 12,
+                    bottom: 8,
+                    left: MediaQuery.of(context).size.width / 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Image.asset(
+                          "assets/images/icon1.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                        Image.asset(
+                          "assets/images/icon2.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                        Image.asset(
+                          "assets/images/icon3.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                        Image.asset(
+                          "assets/images/icon4.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -272,21 +307,23 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             ),
           ),
 
-          const SizedBox(height: 24),
-
-          // Result box
+          // NEW BLUE BOX FOR RESULT
           if (translatedText != null)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 16,
+              ),
               child: Container(
                 width: double.infinity,
                 height: 260,
                 decoration: BoxDecoration(
-                  color: primaryBlue,
+                  color: const Color(0xFF2076F7),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Stack(
                   children: [
+                    // Left image
                     Positioned(
                       top: 8,
                       left: 8,
@@ -296,23 +333,27 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                         height: 56,
                       ),
                     ),
+
+                    // Translated text
                     Positioned(
-                      top: 60,
+                      top: 36,
                       left: 12,
                       right: 12,
                       child: Text(
                         translatedText!,
                         style: GoogleFonts.roboto(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                           color: Colors.white,
                         ),
                       ),
                     ),
+
+                    // Right side icons in white
                     Positioned(
-                      left: 12,
+                      right: 12,
                       bottom: 8,
-                      right: MediaQuery.of(context).size.width / 2,
+                      left: MediaQuery.of(context).size.width / 2,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -377,29 +418,21 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                     ),
                   ],
                 ),
-                _BottomNav(
+                const _BottomNav(
                   iconPath: "assets/images/bottom_voice.png",
                   label: "Voice Translation",
                   active: false,
                   activeColor: primaryBlue,
                   inactiveColor: bottomInactive,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const VoiceTranslationScreen(),
-                      ),
-                    );
-                  },
                 ),
-                _BottomNav(
+                const _BottomNav(
                   iconPath: "assets/images/bottom_dict.png",
                   label: "Dictionary",
                   active: false,
                   activeColor: primaryBlue,
                   inactiveColor: bottomInactive,
                 ),
-                _BottomNav(
+                const _BottomNav(
                   iconPath: "assets/images/bottom_conv.png",
                   label: "Conversation",
                   active: false,
@@ -462,7 +495,6 @@ class _BottomNav extends StatelessWidget {
   final bool active;
   final Color activeColor;
   final Color inactiveColor;
-  final VoidCallback? onTap; // 👈 added
 
   const _BottomNav({
     required this.iconPath,
@@ -470,28 +502,24 @@ class _BottomNav extends StatelessWidget {
     required this.active,
     required this.activeColor,
     required this.inactiveColor,
-    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap, // 👈 now clickable
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(iconPath, width: 20, height: 20),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: GoogleFonts.roboto(
-              fontSize: 10,
-              fontWeight: FontWeight.w400,
-              color: active ? activeColor : inactiveColor,
-            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(iconPath, width: 20, height: 20),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: GoogleFonts.roboto(
+            fontSize: 10,
+            fontWeight: FontWeight.w400,
+            color: active ? activeColor : inactiveColor,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
