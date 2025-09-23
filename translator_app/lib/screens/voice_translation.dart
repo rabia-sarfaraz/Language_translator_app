@@ -217,7 +217,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          /// 🔹 Input Text Area Rectangle
+          /// 🔹 Input Text Area Rectangle (with mic)
           Container(
             width: 328,
             height: 235,
@@ -239,7 +239,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                     ),
                   ),
 
-                /// Textfield for speech result
+                /// Textfield for recognized text
                 Positioned.fill(
                   child: TextField(
                     controller: _controller,
@@ -254,14 +254,17 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                   ),
                 ),
 
-                /// Right-side image inside box
+                /// ✅ Mic icon inside text area
                 Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Image.asset(
-                    "assets/images/right_inside.png",
-                    width: 40,
-                    height: 40,
+                  right: 12,
+                  bottom: 8,
+                  child: GestureDetector(
+                    onTap: _listen,
+                    child: Icon(
+                      _isListening ? Icons.mic : Icons.mic_none,
+                      size: 40,
+                      color: _isListening ? Colors.red : Colors.black54,
+                    ),
                   ),
                 ),
 
