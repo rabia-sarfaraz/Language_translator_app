@@ -128,7 +128,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
           listenFor: const Duration(seconds: 20),
           pauseFor: const Duration(seconds: 5),
           partialResults: true,
-          localeId: "en_US", // 👈 Change this based on `fromLanguage`
+          localeId: "en_US",
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -148,113 +148,288 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F4),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              "Voice Translator",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+      body: Column(
+        children: [
+          const SizedBox(height: 33),
 
-            const SizedBox(height: 20),
-
-            /// Language selection
-            Row(
+          /// 🔹 Top Rectangle Bar
+          Container(
+            width: double.infinity,
+            height: 56,
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                DropdownButton<String>(
-                  value: fromLanguage,
-                  items: languageCodes.keys
-                      .map(
-                        (lang) =>
-                            DropdownMenuItem(value: lang, child: Text(lang)),
-                      )
-                      .toList(),
-                  onChanged: (val) => setState(() => fromLanguage = val!),
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(Icons.arrow_back, size: 24),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      "Translate",
+                      style: GoogleFonts.roboto(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
-                const Icon(Icons.swap_horiz, size: 28, color: primaryBlue),
-                DropdownButton<String>(
-                  value: toLanguage,
-                  items: languageCodes.keys
-                      .map(
-                        (lang) =>
-                            DropdownMenuItem(value: lang, child: Text(lang)),
-                      )
-                      .toList(),
-                  onChanged: (val) => setState(() => toLanguage = val!),
+                Image.asset(
+                  "assets/images/right_icon.png", // 👈 replace with your asset
+                  height: 24,
+                  width: 24,
                 ),
               ],
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
-            /// Input box
-            TextField(
-              controller: _controller,
-              maxLines: 3,
-              decoration: InputDecoration(
-                hintText: "Speak or type something...",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+          /// 🔹 Language Selector Row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildLanguageButton(fromLanguage, isFrom: true),
+                Container(
+                  width: 46,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Center(
+                    child: Image.asset(
+                      "assets/images/center_icon.png",
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
                 ),
-              ),
+                _buildLanguageButton(toLanguage, isFrom: false),
+              ],
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
-            /// Mic button
-            Center(
-              child: IconButton(
-                icon: Icon(
-                  _isListening ? Icons.mic : Icons.mic_none,
-                  size: 40,
-                  color: _isListening ? Colors.red : primaryBlue,
+          /// 🔹 Input Text Area Rectangle
+          Container(
+            width: 328,
+            height: 235,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.black.withOpacity(0.4)),
+            ),
+            child: Stack(
+              children: [
+                /// Placeholder text
+                if (!_isListening && _controller.text.isEmpty)
+                  const Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Text(
+                      "Tap Mic & hold to Speak ......",
+                      style: TextStyle(fontSize: 14, color: Color(0xFF979797)),
+                    ),
+                  ),
+
+                /// Textfield for speech result
+                Positioned.fill(
+                  child: TextField(
+                    controller: _controller,
+                    maxLines: null,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 36,
+                      ),
+                    ),
+                  ),
                 ),
-                onPressed: _listen,
-              ),
+
+                /// Right-side image inside box
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Image.asset(
+                    "assets/images/right_inside.png",
+                    width: 40,
+                    height: 40,
+                  ),
+                ),
+
+                /// Bottom 4 icons
+                Positioned(
+                  left: 12,
+                  bottom: 8,
+                  child: Row(
+                    children: [
+                      Image.asset("assets/images/icon1.png", width: 28),
+                      const SizedBox(width: 16),
+                      Image.asset("assets/images/icon2.png", width: 28),
+                      const SizedBox(width: 16),
+                      Image.asset("assets/images/icon3.png", width: 28),
+                      const SizedBox(width: 16),
+                      Image.asset("assets/images/icon4.png", width: 28),
+                    ],
+                  ),
+                ),
+              ],
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
-            /// Translate button
-            ElevatedButton(
+          /// 🔹 Translate Button
+          SizedBox(
+            width: 200,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: _isTranslating ? null : _onTranslatePressed,
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryBlue,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
               ),
-              onPressed: _onTranslatePressed,
               child: _isTranslating
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
                       "Translate",
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                      style: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
                     ),
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const Spacer(),
 
-            /// Translated output
-            if (translatedText != null)
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+          /// 🔹 Bottom Nav
+          Container(
+            width: 360,
+            height: 56,
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: const [
+                _BottomNav(
+                  iconPath: "assets/images/bottom_text.png",
+                  label: "Text Translation",
+                  active: true,
                 ),
-                child: Text(
-                  translatedText!,
-                  style: const TextStyle(fontSize: 18),
+                _BottomNav(
+                  iconPath: "assets/images/bottom_voice.png",
+                  label: "Voice Translation",
+                  active: false,
                 ),
+                _BottomNav(
+                  iconPath: "assets/images/bottom_dict.png",
+                  label: "Dictionary",
+                  active: false,
+                ),
+                _BottomNav(
+                  iconPath: "assets/images/bottom_conv.png",
+                  label: "Conversation",
+                  active: false,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageButton(String lang, {required bool isFrom}) {
+    return Container(
+      width: 130,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: PopupMenuButton<String>(
+        onSelected: (value) {
+          setState(() {
+            if (isFrom) {
+              fromLanguage = value;
+            } else {
+              toLanguage = value;
+            }
+          });
+        },
+        itemBuilder: (context) {
+          return languageCodes.keys.map((String choice) {
+            return PopupMenuItem<String>(value: choice, child: Text(choice));
+          }).toList();
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const SizedBox(width: 8),
+            Text(
+              lang,
+              style: GoogleFonts.roboto(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
               ),
+            ),
+            const Icon(Icons.keyboard_arrow_down),
+            const SizedBox(width: 8),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _BottomNav extends StatelessWidget {
+  final String iconPath;
+  final String label;
+  final bool active;
+
+  const _BottomNav({
+    required this.iconPath,
+    required this.label,
+    required this.active,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const Color primaryBlue = Color(0xFF2076F7);
+    const Color bottomInactive = Color(0xFF6F6F77);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(iconPath, width: 20, height: 20),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: GoogleFonts.roboto(
+            fontSize: 10,
+            fontWeight: FontWeight.w400,
+            color: active ? primaryBlue : bottomInactive,
+          ),
+        ),
+      ],
     );
   }
 }
