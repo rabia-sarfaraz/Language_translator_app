@@ -61,6 +61,9 @@ flutter:
     - assets/images/bottom_dict.png
     - assets/images/bottom_conv.png
     - assets/images/inside_left.png
+    - assets/images/right_icon.png
+    - assets/images/center_icon.png
+    - assets/images/right_inside.png
 
     # Other icons / loaders
     - assets/icons/loader.png
