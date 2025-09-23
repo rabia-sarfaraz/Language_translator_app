@@ -322,6 +322,24 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
             ),
           ),
 
+          const SizedBox(height: 16),
+
+          /// ✅ Translation Result Box
+          if (translatedText != null)
+            Container(
+              width: 328,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.black.withOpacity(0.4)),
+              ),
+              child: Text(
+                translatedText!,
+                style: const TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ),
+
           const Spacer(),
 
           /// 🔹 Bottom Nav
