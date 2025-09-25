@@ -220,7 +220,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                     ),
                   ),
 
-                  // Inside icon
                   Positioned(
                     top: 8,
                     right: 8,
@@ -269,7 +268,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
           const SizedBox(height: 16),
 
-          // Translate button
           SizedBox(
             width: 200,
             height: 48,
@@ -301,7 +299,6 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
             ),
           ),
 
-          // NEW BLUE BOX FOR RESULT
           if (translatedText != null)
             Padding(
               padding: const EdgeInsets.symmetric(

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'text_translation.dart'; // 👈 apni dusri screen import karna na bhoolna
+import 'text_translation.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
