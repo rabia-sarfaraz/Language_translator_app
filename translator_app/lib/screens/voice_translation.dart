@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
+// ✅ import dictionary screen
+import 'dictionary_screen.dart';
+
 /// Full language codes
 const Map<String, String> languageCodes = {
   "English": "en",
@@ -36,7 +39,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
   late stt.SpeechToText _speech;
   bool _isListening = false;
 
-  /// Multiple LibreTranslate servers for fallback
   final List<String> _servers = [
     "https://translate.astian.org/translate",
     "https://libretranslate.de/translate",
@@ -49,7 +51,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
     _speech = stt.SpeechToText();
   }
 
-  /// Translation with fallback
   Future<String> translateText(String text, String from, String to) async {
     final body = {
       'q': text,
@@ -71,9 +72,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
           final data = jsonDecode(response.body);
           return data['translatedText'] ?? '';
         }
-      } catch (_) {
-        // try next server
-      }
+      } catch (_) {}
     }
 
     throw Exception("All servers failed. Please try again later.");
@@ -109,7 +108,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
     }
   }
 
-  /// ✅ Mic listening logic
   void _listen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
@@ -178,7 +176,7 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                   ],
                 ),
                 Image.asset(
-                  "assets/images/right_icon.png", // 👈 replace with your asset
+                  "assets/images/right_icon.png",
                   height: 24,
                   width: 24,
                 ),
@@ -217,9 +215,9 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          /// 🔹 Input Text Area Rectangle (with mic, icons swapped)
+          /// 🔹 Input Text Area (icons swapped)
           Container(
-            width: MediaQuery.of(context).size.width - 32, // responsive width
+            width: MediaQuery.of(context).size.width - 32,
             height: 235,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -250,8 +248,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                     ),
                   ),
                 ),
-
-                /// Mic moved to left
                 Positioned(
                   left: 12,
                   bottom: 8,
@@ -264,8 +260,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                     ),
                   ),
                 ),
-
-                /// Icons moved to right
                 Positioned(
                   right: 12,
                   bottom: 8,
@@ -287,7 +281,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 Translate Button
           SizedBox(
             width: 200,
             height: 48,
@@ -321,7 +314,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 16),
 
-          /// ✅ Translation Result Box (Blue, icons swapped)
           if (translatedText != null)
             Container(
               width: MediaQuery.of(context).size.width - 32,
@@ -350,8 +342,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                       ),
                     ),
                   ),
-
-                  /// Mic moved to right
                   Positioned(
                     right: 12,
                     bottom: 8,
@@ -364,8 +354,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                       ),
                     ),
                   ),
-
-                  /// Icons moved to left
                   Positioned(
                     left: 12,
                     bottom: 8,
@@ -403,20 +391,20 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const Spacer(),
 
-          /// 🔹 Bottom Nav (full width)
+          /// 🔹 Bottom Nav (dictionary nav updated)
           Container(
             width: double.infinity,
             height: 56,
             color: Colors.white,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                _BottomNav(
+              children: [
+                const _BottomNav(
                   iconPath: "assets/images/bottom_text.png",
                   label: "Text Translation",
                   active: true,
                 ),
-                _BottomNav(
+                const _BottomNav(
                   iconPath: "assets/images/bottom_voice.png",
                   label: "Voice Translation",
                   active: false,
@@ -425,8 +413,16 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                   iconPath: "assets/images/bottom_dict.png",
                   label: "Dictionary",
                   active: false,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DictionaryScreen(),
+                      ),
+                    );
+                  },
                 ),
-                _BottomNav(
+                const _BottomNav(
                   iconPath: "assets/images/bottom_conv.png",
                   label: "Conversation",
                   active: false,
@@ -486,11 +482,13 @@ class _BottomNav extends StatelessWidget {
   final String iconPath;
   final String label;
   final bool active;
+  final VoidCallback? onTap;
 
   const _BottomNav({
     required this.iconPath,
     required this.label,
     required this.active,
+    this.onTap,
   });
 
   @override
@@ -498,20 +496,23 @@ class _BottomNav extends StatelessWidget {
     const Color primaryBlue = Color(0xFF2076F7);
     const Color bottomInactive = Color(0xFF6F6F77);
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Image.asset(iconPath, width: 20, height: 20),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: GoogleFonts.roboto(
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            color: active ? primaryBlue : bottomInactive,
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(iconPath, width: 20, height: 20),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: GoogleFonts.roboto(
+              fontSize: 10,
+              fontWeight: FontWeight.w400,
+              color: active ? primaryBlue : bottomInactive,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
