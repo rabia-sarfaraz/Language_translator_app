@@ -5,6 +5,7 @@ import 'screens/home_screen.dart';
 import 'screens/text_translation.dart';
 import 'screens/voice_translation.dart';
 import 'screens/dictionary_screen.dart';
+import 'screens/conversation_screen.dart';
 
 void main() {
   runApp(const TranslatorApp());
@@ -30,6 +31,7 @@ class TranslatorApp extends StatelessWidget {
         '/text_translation': (context) => const TextTranslationScreen(),
         '/voice_translation': (context) => const VoiceTranslationScreen(),
         'dictionary': (context) => const DictionaryScreen(),
+        'conversation': (context) => const ConversationScreen(),
       },
     );
   }

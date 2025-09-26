@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
+// ✅ import conversation screen
+import 'conversation_screen.dart';
+
 /// Full language codes (same as before, dropdown ke liye)
 const Map<String, String> languageCodes = {
   "English": "en",
@@ -274,34 +277,34 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
             color: Colors.white,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                _BottomNav(
+              children: [
+                const _BottomNav(
                   iconPath: "assets/images/bottom_text.png",
                   label: "Text Translation",
                   active: false,
-                  activeColor: primaryBlue,
-                  inactiveColor: bottomInactive,
                 ),
-                _BottomNav(
+                const _BottomNav(
                   iconPath: "assets/images/bottom_voice.png",
                   label: "Voice Translation",
                   active: false,
-                  activeColor: primaryBlue,
-                  inactiveColor: bottomInactive,
                 ),
-                _BottomNav(
+                const _BottomNav(
                   iconPath: "assets/images/bottom_dict.png",
                   label: "Dictionary",
                   active: true,
-                  activeColor: primaryBlue,
-                  inactiveColor: bottomInactive,
                 ),
                 _BottomNav(
                   iconPath: "assets/images/bottom_conv.png",
                   label: "Conversation",
                   active: false,
-                  activeColor: primaryBlue,
-                  inactiveColor: bottomInactive,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ConversationScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -341,33 +344,37 @@ class _BottomNav extends StatelessWidget {
   final String iconPath;
   final String label;
   final bool active;
-  final Color activeColor;
-  final Color inactiveColor;
+  final VoidCallback? onTap;
 
   const _BottomNav({
     required this.iconPath,
     required this.label,
     required this.active,
-    required this.activeColor,
-    required this.inactiveColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Image.asset(iconPath, width: 20, height: 20),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: GoogleFonts.roboto(
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            color: active ? activeColor : inactiveColor,
+    const Color primaryBlue = Color(0xFF2076F7);
+    const Color bottomInactive = Color(0xFF6F6F77);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(iconPath, width: 20, height: 20),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: GoogleFonts.roboto(
+              fontSize: 10,
+              fontWeight: FontWeight.w400,
+              color: active ? primaryBlue : bottomInactive,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
