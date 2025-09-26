@@ -100,7 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
   ) async {
     try {
       final response = await http.post(
-        Uri.parse("https://libretranslate.de/translate"),
+        Uri.parse("https://translate.argosopentech.com/translate"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "q": text,
@@ -109,10 +109,12 @@ class _ChatScreenState extends State<ChatScreen> {
           "format": "text",
         }),
       );
+
       if (response.statusCode == 200) {
-        return jsonDecode(response.body)["translatedText"];
+        final data = jsonDecode(response.body);
+        return data["translatedText"] ?? "No translation found.";
       } else {
-        return "Translation error!";
+        return "Translation error: ${response.statusCode}";
       }
     } catch (e) {
       return "Error: $e";
@@ -121,107 +123,175 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const Color userBubbleColor = Color(0x803E7AFF); // #3E7AFF80
-    const Color replyBubbleColor = Color(0xFF3E7AFF); // #3E7AFF
+    const Color userBubbleColor = Color(0x803E7AFF); // lighter blue
+    const Color replyBubbleColor = Color(0xFF3E7AFF); // solid blue
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F4),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 1,
-        title: Text(
-          "Voice Chat",
-          style: GoogleFonts.roboto(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: Column(
         children: [
-          /// 🔹 Chat List
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final msg = messages[index];
-                final isUser = msg["isUser"];
-                final lang = msg["lang"];
-                final flagPath = languages[lang]!["flag"]!;
+          const SizedBox(height: 33),
 
-                return Row(
-                  mainAxisAlignment: isUser
-                      ? MainAxisAlignment.end
-                      : MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          /// 🔹 Top Rectangle Bar
+          Container(
+            width: double.infinity,
+            height: 56,
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
                   children: [
-                    if (!isUser) ...[
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundImage: AssetImage(flagPath),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
-                    Flexible(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: isUser ? userBubbleColor : replyBubbleColor,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(isUser ? 16 : 6),
-                            topRight: const Radius.circular(16),
-                            bottomLeft: const Radius.circular(16),
-                            bottomRight: Radius.circular(isUser ? 6 : 16),
-                          ),
-                        ),
-                        child: Text(
-                          msg["text"],
-                          style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(Icons.arrow_back, size: 24),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      "Chat",
+                      style: GoogleFonts.roboto(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    if (isUser) ...[
-                      const SizedBox(width: 8),
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundImage: AssetImage(flagPath),
-                      ),
-                    ],
                   ],
-                );
-              },
+                ),
+                Image.asset(
+                  "assets/images/right_icon.png",
+                  height: 24,
+                  width: 24,
+                ),
+              ],
             ),
           ),
 
-          const Divider(height: 1),
+          const SizedBox(height: 16),
 
-          /// 🔹 Language selection row
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(12),
+          /// 🔹 White Chat Area
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.black.withOpacity(0.4)),
+                ),
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final msg = messages[index];
+                    final isUser = msg["isUser"];
+                    final lang = msg["lang"];
+                    final flagPath = languages[lang]!["flag"]!;
+
+                    return Row(
+                      mainAxisAlignment: isUser
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!isUser) ...[
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundImage: AssetImage(flagPath),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        Flexible(
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isUser
+                                  ? userBubbleColor
+                                  : replyBubbleColor,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(isUser ? 16 : 6),
+                                topRight: const Radius.circular(16),
+                                bottomLeft: const Radius.circular(16),
+                                bottomRight: Radius.circular(isUser ? 6 : 16),
+                              ),
+                            ),
+                            child: Text(
+                              msg["text"],
+                              style: GoogleFonts.roboto(
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (isUser) ...[
+                          const SizedBox(width: 8),
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundImage: AssetImage(flagPath),
+                          ),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          /// 🔹 Language Selector Row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildLanguageButton(fromLanguage, isFrom: true),
+                Container(
+                  width: 46,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: const Icon(Icons.swap_horiz, color: Colors.blue),
+                ),
+                _buildLanguageButton(toLanguage, isFrom: false),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          /// 🔹 Bottom Navigation
+          Container(
+            width: double.infinity,
+            height: 56,
+            color: Colors.white,
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildLangSelector(
-                  selectedLang: fromLanguage,
-                  onChanged: (val) {
-                    setState(() => fromLanguage = val!);
-                  },
-                  onMicPressed: () => _listenAndTranslate(true),
+                _BottomNav(
+                  iconPath: "assets/images/bottom_text.png",
+                  label: "Text Translation",
+                  active: false,
                 ),
-                _buildLangSelector(
-                  selectedLang: toLanguage,
-                  onChanged: (val) {
-                    setState(() => toLanguage = val!);
-                  },
-                  onMicPressed: () => _listenAndTranslate(false),
+                _BottomNav(
+                  iconPath: "assets/images/bottom_voice.png",
+                  label: "Voice Translation",
+                  active: false,
+                ),
+                _BottomNav(
+                  iconPath: "assets/images/bottom_dict.png",
+                  label: "Dictionary",
+                  active: false,
+                ),
+                _BottomNav(
+                  iconPath: "assets/images/bottom_conv.png",
+                  label: "Conversation",
+                  active: true,
                 ),
               ],
             ),
@@ -231,26 +301,63 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildLangSelector({
-    required String selectedLang,
-    required void Function(String?) onChanged,
-    required VoidCallback onMicPressed,
-  }) {
+  Widget _buildLanguageButton(String lang, {required bool isFrom}) {
+    return Container(
+      width: 130,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const SizedBox(width: 8),
+          Text(
+            lang,
+            style: GoogleFonts.roboto(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.mic, color: Colors.blue),
+            onPressed: () => _listenAndTranslate(isFrom),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomNav extends StatelessWidget {
+  final String iconPath;
+  final String label;
+  final bool active;
+
+  const _BottomNav({
+    required this.iconPath,
+    required this.label,
+    required this.active,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const Color primaryBlue = Color(0xFF2076F7);
+    const Color bottomInactive = Color(0xFF6F6F77);
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        DropdownButton<String>(
-          value: selectedLang,
-          items: languages.keys.map((String lang) {
-            return DropdownMenuItem<String>(
-              value: lang,
-              child: Text(lang, style: GoogleFonts.roboto(fontSize: 14)),
-            );
-          }).toList(),
-          onChanged: onChanged,
-        ),
-        IconButton(
-          icon: const Icon(Icons.mic, color: Colors.blue),
-          onPressed: onMicPressed,
+        Image.asset(iconPath, width: 20, height: 20),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: GoogleFonts.roboto(
+            fontSize: 10,
+            fontWeight: FontWeight.w400,
+            color: active ? primaryBlue : bottomInactive,
+          ),
         ),
       ],
     );
