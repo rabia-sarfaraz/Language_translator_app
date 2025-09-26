@@ -228,7 +228,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
             ),
             child: Stack(
               children: [
-                /// Placeholder text
                 if (!_isListening && _controller.text.isEmpty)
                   const Positioned(
                     top: 12,
@@ -238,8 +237,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                       style: TextStyle(fontSize: 14, color: Color(0xFF979797)),
                     ),
                   ),
-
-                /// Textfield for recognized text
                 Positioned.fill(
                   child: TextField(
                     controller: _controller,
@@ -253,8 +250,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                     ),
                   ),
                 ),
-
-                /// ✅ Mic icon inside text area
                 Positioned(
                   right: 12,
                   bottom: 8,
@@ -267,8 +262,6 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                     ),
                   ),
                 ),
-
-                /// Bottom 4 icons
                 Positioned(
                   left: 12,
                   bottom: 8,
@@ -324,19 +317,79 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 16),
 
-          /// ✅ Translation Result Box
+          /// ✅ Translation Result Box (Updated)
           if (translatedText != null)
             Container(
               width: 328,
-              padding: const EdgeInsets.all(12),
+              height: 235,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFF2076F7),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.black.withOpacity(0.4)),
               ),
-              child: Text(
-                translatedText!,
-                style: const TextStyle(fontSize: 16, color: Colors.black),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 36,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Text(
+                          translatedText!,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 12,
+                    bottom: 8,
+                    child: GestureDetector(
+                      onTap: _listen,
+                      child: Icon(
+                        _isListening ? Icons.mic : Icons.mic_none,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 12,
+                    bottom: 8,
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "assets/images/icon1.png",
+                          width: 28,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 16),
+                        Image.asset(
+                          "assets/images/icon2.png",
+                          width: 28,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 16),
+                        Image.asset(
+                          "assets/images/icon3.png",
+                          width: 28,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 16),
+                        Image.asset(
+                          "assets/images/icon4.png",
+                          width: 28,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
 
