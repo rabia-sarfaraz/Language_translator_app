@@ -4,19 +4,40 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:http/http.dart' as http;
 
-/// Language codes + flag paths
-const Map<String, Map<String, String>> languages = {
-  "English": {"code": "en", "flag": "assets/flags/english.png"},
-  "Spanish": {"code": "es", "flag": "assets/flags/spanish.png"},
-  "French": {"code": "fr", "flag": "assets/flags/french.png"},
-  "German": {"code": "de", "flag": "assets/flags/german.png"},
-  "Italian": {"code": "it", "flag": "assets/flags/italian.png"},
-  "Urdu": {"code": "ur", "flag": "assets/flags/urdu.png"},
-  "Arabic": {"code": "ar", "flag": "assets/flags/arabic.png"},
-  "Hindi": {"code": "hi", "flag": "assets/flags/hindi.png"},
-  "Chinese": {"code": "zh", "flag": "assets/flags/chinese.png"},
-  "Russian": {"code": "ru", "flag": "assets/flags/russian.png"},
+/// Language codes (no flags in dropdown)
+const Map<String, String> languageCodes = {
+  "English": "en",
+  "Spanish": "es",
+  "French": "fr",
+  "German": "de",
+  "Italian": "it",
+  "Urdu": "ur",
+  "Arabic": "ar",
+  "Hindi": "hi",
+  "Chinese": "zh",
+  "Russian": "ru",
 };
+
+/// Flags for chat bubbles only
+const Map<String, String> languageFlags = {
+  "English": "assets/flags/english.png",
+  "Spanish": "assets/flags/spanish.png",
+  "French": "assets/flags/french.png",
+  "German": "assets/flags/german.png",
+  "Italian": "assets/flags/italian.png",
+  "Urdu": "assets/flags/urdu.png",
+  "Arabic": "assets/flags/arabic.png",
+  "Hindi": "assets/flags/hindi.png",
+  "Chinese": "assets/flags/chinese.png",
+  "Russian": "assets/flags/russian.png",
+};
+
+/// 🌍 Translation servers (fallback list)
+const List<String> translationServers = [
+  "https://libretranslate.de/translate",
+  "https://translate.astian.org/translate",
+  "https://libretranslate.com/translate",
+];
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -59,8 +80,8 @@ class _ChatScreenState extends State<ChatScreen> {
             }
           },
           localeId: isFrom
-              ? languages[fromLanguage]!["code"]!
-              : languages[toLanguage]!["code"]!,
+              ? languageCodes[fromLanguage]!
+              : languageCodes[toLanguage]!,
         );
       }
     } else {
@@ -80,8 +101,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
     String translatedText = await _translateText(
       text,
-      languages[sourceLang]!["code"]!,
-      languages[targetLang]!["code"]!,
+      languageCodes[sourceLang]!,
+      languageCodes[targetLang]!,
     );
 
     setState(() {
@@ -93,32 +114,34 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  /// ✅ Multi-server fallback translation
   Future<String> _translateText(
     String text,
     String fromCode,
     String toCode,
   ) async {
-    try {
-      final response = await http.post(
-        Uri.parse("https://translate.argosopentech.com/translate"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "q": text,
-          "source": fromCode,
-          "target": toCode,
-          "format": "text",
-        }),
-      );
+    for (final server in translationServers) {
+      try {
+        final response = await http.post(
+          Uri.parse(server),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "q": text,
+            "source": fromCode,
+            "target": toCode,
+            "format": "text",
+          }),
+        );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data["translatedText"] ?? "No translation found.";
-      } else {
-        return "Translation error: ${response.statusCode}";
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          return data["translatedText"] ?? "No translation found.";
+        }
+      } catch (e) {
+        debugPrint("⚠️ Server failed: $server -> $e");
       }
-    } catch (e) {
-      return "Error: $e";
     }
+    return "⚠️ All translation servers failed.";
   }
 
   @override
@@ -186,7 +209,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     final msg = messages[index];
                     final isUser = msg["isUser"];
                     final lang = msg["lang"];
-                    final flagPath = languages[lang]!["flag"]!;
+                    final flagPath = languageFlags[lang]!;
 
                     return Row(
                       mainAxisAlignment: isUser
@@ -242,13 +265,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 Language Selector Row
+          /// 🔹 Language Selector Row (Dropdown + Mic)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildLanguageButton(fromLanguage, isFrom: true),
+                _buildLanguageSelector(true),
                 Container(
                   width: 46,
                   height: 40,
@@ -258,7 +281,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   child: const Icon(Icons.swap_horiz, color: Colors.blue),
                 ),
-                _buildLanguageButton(toLanguage, isFrom: false),
+                _buildLanguageSelector(false),
               ],
             ),
           ),
@@ -301,23 +324,45 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildLanguageButton(String lang, {required bool isFrom}) {
+  Widget _buildLanguageSelector(bool isFrom) {
     return Container(
-      width: 130,
+      width: 150,
       height: 40,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(width: 8),
-          Text(
-            lang,
-            style: GoogleFonts.roboto(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
+          Expanded(
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: isFrom ? fromLanguage : toLanguage,
+                isExpanded: true,
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.blue),
+                style: GoogleFonts.roboto(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+                onChanged: (String? newLang) {
+                  if (newLang != null) {
+                    setState(() {
+                      if (isFrom) {
+                        fromLanguage = newLang;
+                      } else {
+                        toLanguage = newLang;
+                      }
+                    });
+                  }
+                },
+                items: languageCodes.keys.map((lang) {
+                  return DropdownMenuItem<String>(
+                    value: lang,
+                    child: Text(lang),
+                  );
+                }).toList(),
+              ),
             ),
           ),
           IconButton(
