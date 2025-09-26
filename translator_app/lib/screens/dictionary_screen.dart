@@ -3,6 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
+/// Full language codes (same as before, dropdown ke liye)
+const Map<String, String> languageCodes = {
+  "English": "en",
+  "Spanish": "es",
+  "French": "fr",
+  "German": "de",
+  "Italian": "it",
+  "Urdu": "ur",
+  "Arabic": "ar",
+  "Hindi": "hi",
+  "Chinese": "zh",
+  "Russian": "ru",
+};
+
 class DictionaryScreen extends StatefulWidget {
   const DictionaryScreen({super.key});
 
@@ -12,39 +26,50 @@ class DictionaryScreen extends StatefulWidget {
 
 class _DictionaryScreenState extends State<DictionaryScreen> {
   final TextEditingController _controller = TextEditingController();
-  Map<String, dynamic>? wordData;
+  Map<String, dynamic>? _wordData;
   bool _isLoading = false;
+  String? _errorMessage;
 
-  Future<void> fetchWordMeaning(String word) async {
+  Future<void> _searchWord() async {
+    final query = _controller.text.trim();
+    if (query.isEmpty) return;
+
     setState(() {
       _isLoading = true;
-      wordData = null;
+      _wordData = null;
+      _errorMessage = null;
     });
 
     try {
       final url = Uri.parse(
-        "https://api.dictionaryapi.dev/api/v2/entries/en/$word",
+        "https://api.dictionaryapi.dev/api/v2/entries/en/$query",
       );
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        final List data = jsonDecode(response.body);
-        setState(() {
-          wordData = data[0];
-          _isLoading = false;
-        });
+        final data = jsonDecode(response.body);
+
+        if (data is List && data.isNotEmpty) {
+          setState(() {
+            _wordData = data[0];
+          });
+        } else {
+          setState(() {
+            _errorMessage = "No result found for \"$query\".";
+          });
+        }
       } else {
         setState(() {
-          _isLoading = false;
-          wordData = {"error": "Word not found"};
+          _errorMessage = "Word not found.";
         });
       }
     } catch (e) {
       setState(() {
-        _isLoading = false;
-        wordData = {"error": "Failed to fetch meaning"};
+        _errorMessage = "Error fetching word: $e";
       });
     }
+
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -58,7 +83,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
         children: [
           const SizedBox(height: 33),
 
-          // 🔹 Top bar
+          // Top bar
           Container(
             width: double.infinity,
             height: 56,
@@ -70,7 +95,9 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
                       child: Image.asset(
                         "assets/images/back.png",
                         height: 24,
@@ -95,7 +122,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
 
           const SizedBox(height: 24),
 
-          // 🔹 Language selectors row
+          // Language selectors row (same as before)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -125,10 +152,12 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
 
           const SizedBox(height: 24),
 
-          // 🔹 White big box (Search + Results)
+          // Big white dictionary box
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+              ).copyWith(bottom: 16), // 2 line spacing from bottom bar
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -141,41 +170,78 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                 ),
                 padding: const EdgeInsets.all(16),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Search bar
                     TextField(
                       controller: _controller,
+                      onSubmitted: (_) => _searchWord(),
                       decoration: InputDecoration(
                         hintText: "Search word...",
-                        hintStyle: GoogleFonts.roboto(
-                          color: Colors.grey,
-                          fontSize: 16,
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.search, color: primaryBlue),
+                          onPressed: _searchWord,
                         ),
-                        prefixIcon: const Icon(Icons.search),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onSubmitted: (value) {
-                        if (value.isNotEmpty) {
-                          fetchWordMeaning(value);
-                        }
-                      },
                     ),
 
                     const SizedBox(height: 20),
 
-                    // Results
                     if (_isLoading)
-                      const CircularProgressIndicator(color: primaryBlue),
-                    if (!_isLoading && wordData != null) _buildWordDetails(),
+                      const Center(child: CircularProgressIndicator()),
+
+                    if (_errorMessage != null)
+                      Center(
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+
+                    if (_wordData != null) ...[
+                      Text(
+                        _wordData!["word"] ?? "",
+                        style: GoogleFonts.roboto(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: primaryBlue, // highlighted word
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      if (_wordData!["meanings"] != null &&
+                          _wordData!["meanings"].isNotEmpty)
+                        Text(
+                          "Part of Speech: ${_wordData!["meanings"][0]["partOfSpeech"]}",
+                          style: GoogleFonts.roboto(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: primaryBlue, // highlighted POS
+                          ),
+                        ),
+
+                      const SizedBox(height: 10),
+
+                      if (_wordData!["origin"] != null)
+                        Text(
+                          "Origin: ${_wordData!["origin"]}",
+                          style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black87,
+                          ),
+                        ),
+                    ],
                   ],
                 ),
               ),
             ),
           ),
 
-          // 🔹 Bottom nav
+          // Bottom nav bar (same as before)
           Container(
             width: double.infinity,
             height: 56,
@@ -243,62 +309,6 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
       ),
     );
   }
-
-  Widget _buildWordDetails() {
-    const Color primaryBlue = Color(0xFF2076F7);
-
-    if (wordData?["error"] != null) {
-      return Text(
-        wordData!["error"],
-        style: GoogleFonts.roboto(fontSize: 16, color: Colors.red),
-      );
-    }
-
-    String word = wordData?["word"] ?? "";
-    List meanings = wordData?["meanings"] ?? [];
-
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Word title
-            Text(
-              word,
-              style: GoogleFonts.roboto(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: primaryBlue,
-              ),
-            ),
-            const SizedBox(height: 10),
-
-            for (var meaning in meanings) ...[
-              Text(
-                meaning["partOfSpeech"] ?? "",
-                style: GoogleFonts.roboto(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 6),
-
-              for (var def in meaning["definitions"])
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Text(
-                    "- ${def["definition"]}",
-                    style: GoogleFonts.roboto(fontSize: 15, height: 1.4),
-                  ),
-                ),
-              const SizedBox(height: 16),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _BottomNav extends StatelessWidget {
@@ -321,12 +331,7 @@ class _BottomNav extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset(
-          iconPath,
-          width: 20,
-          height: 20,
-          color: active ? activeColor : inactiveColor,
-        ),
+        Image.asset(iconPath, width: 20, height: 20),
         const SizedBox(height: 4),
         Text(
           label,
