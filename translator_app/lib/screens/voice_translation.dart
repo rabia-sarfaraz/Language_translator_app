@@ -217,9 +217,9 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 24),
 
-          /// 🔹 Input Text Area Rectangle (with mic)
+          /// 🔹 Input Text Area Rectangle (with mic, icons swapped)
           Container(
-            width: 328,
+            width: MediaQuery.of(context).size.width - 32, // responsive width
             height: 235,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -250,8 +250,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                     ),
                   ),
                 ),
+
+                /// Mic moved to left
                 Positioned(
-                  right: 12,
+                  left: 12,
                   bottom: 8,
                   child: GestureDetector(
                     onTap: _listen,
@@ -262,8 +264,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                     ),
                   ),
                 ),
+
+                /// Icons moved to right
                 Positioned(
-                  left: 12,
+                  right: 12,
                   bottom: 8,
                   child: Row(
                     children: [
@@ -317,10 +321,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const SizedBox(height: 16),
 
-          /// ✅ Translation Result Box (Updated)
+          /// ✅ Translation Result Box (Blue, icons swapped)
           if (translatedText != null)
             Container(
-              width: 328,
+              width: MediaQuery.of(context).size.width - 32,
               height: 235,
               decoration: BoxDecoration(
                 color: const Color(0xFF2076F7),
@@ -346,8 +350,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                       ),
                     ),
                   ),
+
+                  /// Mic moved to right
                   Positioned(
-                    left: 12,
+                    right: 12,
                     bottom: 8,
                     child: GestureDetector(
                       onTap: _listen,
@@ -358,8 +364,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
                       ),
                     ),
                   ),
+
+                  /// Icons moved to left
                   Positioned(
-                    right: 12,
+                    left: 12,
                     bottom: 8,
                     child: Row(
                       children: [
@@ -395,9 +403,9 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen> {
 
           const Spacer(),
 
-          /// 🔹 Bottom Nav
+          /// 🔹 Bottom Nav (full width)
           Container(
-            width: 360,
+            width: double.infinity,
             height: 56,
             color: Colors.white,
             child: Row(
