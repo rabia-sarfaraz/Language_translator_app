@@ -1,5 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+/// Import ChatScreen
+import 'chat_screen.dart';
 
 /// Full language codes
 const Map<String, String> languageCodes = {
@@ -25,6 +29,21 @@ class ConversationScreen extends StatefulWidget {
 class _ConversationScreenState extends State<ConversationScreen> {
   String fromLanguage = "English";
   String toLanguage = "Spanish";
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// 🔹 Navigate after 5 seconds
+    Timer(const Duration(seconds: 5), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ChatScreen()),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +117,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 Language Selector Row (placed above bottom bar)
+          /// 🔹 Language Selector Row
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(

@@ -15,22 +15,22 @@ dependencies:
   # UI Icons
   cupertino_icons: ^1.0.8
 
-  # Fonts (needs http >=1.0.0)
+  # Fonts (requires http >=1.0.0)
   google_fonts: ^6.2.1
 
   # Animations (Lottie JSON files)
   lottie: ^3.1.2
 
-  # SVG / Illustrations (if needed later)
+  # SVG / Illustrations (optional if you use .svg flags later)
   flutter_svg: ^2.0.9
 
-  # HTTP for API calls (match google_fonts requirement)
+  # HTTP for API calls
   http: ^1.5.0
 
   # Speech to Text (for voice input)
   speech_to_text: ^6.6.0
 
-  # 🔹 NEW: Microphone runtime permission
+  # Microphone runtime permission
   permission_handler: ^11.3.1
 
 dev_dependencies:
@@ -64,10 +64,22 @@ flutter:
     - assets/images/right_icon.png
     - assets/images/center_icon.png
     - assets/images/right_inside.png
-    - assets/images/conversation.gif
 
-    # Other icons / loaders
+    # Conversation illustration / loader
+    - assets/images/conversation.gif
     - assets/icons/loader.png
 
     # Animations
     - assets/animations/translate.json
+
+    # 🔹 Language flags (used in chat bubbles)
+    - assets/flags/english.png
+    - assets/flags/spanish.png
+    - assets/flags/french.png
+    - assets/flags/german.png
+    - assets/flags/italian.png
+    - assets/flags/urdu.png
+    - assets/flags/arabic.png
+    - assets/flags/hindi.png
+    - assets/flags/chinese.png
+    - assets/flags/russian.png
