@@ -64,6 +64,7 @@ flutter:
     - assets/images/right_icon.png
     - assets/images/center_icon.png
     - assets/images/right_inside.png
+    - assets/images/conversation.gif
 
     # Other icons / loaders
     - assets/icons/loader.png

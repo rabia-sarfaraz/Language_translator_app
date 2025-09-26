@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 
 /// Full language codes
 const Map<String, String> languageCodes = {
@@ -74,27 +73,32 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 Big White Box with Lottie in Center
-          Container(
-            width: MediaQuery.of(context).size.width - 32,
-            height: 300, // 👈 adjust if needed
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.black.withOpacity(0.4)),
-            ),
-            child: Center(
-              child: Lottie.asset(
-                "assets/lottie/conversation.json", // ✅ add your lottie file in assets
-                width: 150,
-                height: 150,
+          /// 🔹 Big White Box with GIF Illustration
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.black.withOpacity(0.4)),
+                ),
+                child: Center(
+                  child: Image.asset(
+                    "assets/images/conversation.gif", // ✅ GIF path
+                    width: 220,
+                    height: 220,
+                    fit: BoxFit.contain,
+                  ),
+                ),
               ),
             ),
           ),
 
           const SizedBox(height: 16),
 
-          /// 🔹 Language Selector Row
+          /// 🔹 Language Selector Row (placed above bottom bar)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -121,9 +125,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
             ),
           ),
 
-          const Spacer(),
+          const SizedBox(height: 12),
 
-          /// 🔹 Bottom Nav (navigator removed)
+          /// 🔹 Bottom Nav
           Container(
             width: double.infinity,
             height: 56,
