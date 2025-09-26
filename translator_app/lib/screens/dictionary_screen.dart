@@ -122,7 +122,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
 
           const SizedBox(height: 24),
 
-          // Language selectors row (same as before)
+          // Language selectors row
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -213,15 +213,26 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                       const SizedBox(height: 10),
 
                       if (_wordData!["meanings"] != null &&
-                          _wordData!["meanings"].isNotEmpty)
+                          _wordData!["meanings"].isNotEmpty) ...[
                         Text(
                           "Part of Speech: ${_wordData!["meanings"][0]["partOfSpeech"]}",
                           style: GoogleFonts.roboto(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: primaryBlue, // highlighted POS
+                            color: primaryBlue,
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        if (_wordData!["meanings"][0]["definitions"] != null &&
+                            _wordData!["meanings"][0]["definitions"].isNotEmpty)
+                          Text(
+                            "Definition: ${_wordData!["meanings"][0]["definitions"][0]["definition"]}",
+                            style: GoogleFonts.roboto(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                      ],
 
                       const SizedBox(height: 10),
 
@@ -230,7 +241,22 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                           "Origin: ${_wordData!["origin"]}",
                           style: GoogleFonts.roboto(
                             fontSize: 14,
-                            fontWeight: FontWeight.w400,
+                            color: Colors.black87,
+                          ),
+                        ),
+
+                      const SizedBox(height: 10),
+
+                      // Derivation aur initial use manually check karne ka jagah
+                      if (_wordData!["meanings"] != null &&
+                          _wordData!["meanings"][0]["definitions"] != null &&
+                          _wordData!["meanings"][0]["definitions"].isNotEmpty &&
+                          _wordData!["meanings"][0]["definitions"][0]["example"] !=
+                              null)
+                        Text(
+                          "Initially Used: ${_wordData!["meanings"][0]["definitions"][0]["example"]}",
+                          style: GoogleFonts.roboto(
+                            fontSize: 14,
                             color: Colors.black87,
                           ),
                         ),
@@ -241,7 +267,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
             ),
           ),
 
-          // Bottom nav bar (same as before)
+          // Bottom nav bar
           Container(
             width: double.infinity,
             height: 56,
