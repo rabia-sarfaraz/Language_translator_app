@@ -5,7 +5,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:http/http.dart' as http;
 import 'setting_screen.dart'; // 👈 make sure this file exists
 
-/// Language codes (translation target)
+/// Language codes (translation)
 const Map<String, String> languageCodes = {
   "English": "en",
   "Spanish": "es",
@@ -114,10 +114,9 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  /// ✅ HuggingFace chatbot reply
+  /// ✅ HuggingFace AI Reply + Translation to target language
   Future<String> _getAIReply(String text, String targetLang) async {
     try {
-      // Step 1: Get AI reply in English
       final response = await http.post(
         Uri.parse(
           "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
@@ -128,28 +127,27 @@ class _ChatScreenState extends State<ChatScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        String aiReply = data[0]["generated_text"] ?? "I don’t understand.";
+        String aiReply = data[0]["generated_text"] ?? "I don’t know.";
 
-        // Step 2: Translate AI reply to target language (if not English)
+        // If selected language is not English → translate reply
         if (targetLang != "English") {
-          aiReply = await _translateText(
+          final translation = await _translateText(
             aiReply,
-            languageCodes["English"]!,
+            "en",
             languageCodes[targetLang]!,
           );
+          return translation;
         }
-
         return aiReply;
       } else {
-        return "⚠️ AI server error (${response.statusCode})";
+        return "⚠️ AI Server error: ${response.statusCode}";
       }
     } catch (e) {
-      debugPrint("⚠️ AI Reply error: $e");
-      return "⚠️ Failed to get response";
+      return "⚠️ Error: $e";
     }
   }
 
-  /// Free translation API (MyMemory)
+  /// ✅ Free Translation API (MyMemory)
   Future<String> _translateText(
     String text,
     String fromCode,
@@ -164,9 +162,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (data["responseData"]?["translatedText"] != null) {
-          return data["responseData"]["translatedText"];
-        }
+        return data["responseData"]["translatedText"] ?? text;
       }
     } catch (e) {
       debugPrint("⚠️ Translation error: $e");
@@ -176,8 +172,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const Color userBubbleColor = Color(0x803E7AFF);
-    const Color replyBubbleColor = Color(0xFF3E7AFF);
+    const Color userBubbleColor = Color(0x803E7AFF); // lighter blue
+    const Color replyBubbleColor = Color(0xFF3E7AFF); // solid blue
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F4),
@@ -210,6 +206,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                 ),
+
+                /// ✅ Right side icon → navigate to settings
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -231,7 +229,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 Chat Area
+          /// 🔹 White Chat Area
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -305,7 +303,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 Language Selector Row
+          /// 🔹 Language Selector Row (Dropdown + Mic)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -328,7 +326,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 12),
 
-          /// 🔹 Bottom Nav
+          /// 🔹 Bottom Navigation
           Container(
             width: double.infinity,
             height: 56,
