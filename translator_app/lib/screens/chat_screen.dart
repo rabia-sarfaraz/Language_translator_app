@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:http/http.dart' as http;
 
-/// Language codes (translation)
+/// Language codes for translation
 const Map<String, String> languageCodes = {
   "English": "en",
   "Spanish": "es",
@@ -18,7 +18,7 @@ const Map<String, String> languageCodes = {
   "Russian": "ru",
 };
 
-/// Speech locales (for mic recognition)
+/// Speech locales for mic recognition
 const Map<String, String> speechLocales = {
   "English": "en-US",
   "Spanish": "es-ES",
@@ -32,7 +32,7 @@ const Map<String, String> speechLocales = {
   "Russian": "ru-RU",
 };
 
-/// Flags for chat bubbles only
+/// Flags only for chat bubbles
 const Map<String, String> languageFlags = {
   "English": "assets/flags/english.png",
   "Spanish": "assets/flags/spanish.png",
@@ -46,7 +46,7 @@ const Map<String, String> languageFlags = {
   "Russian": "assets/flags/russian.png",
 };
 
-/// 🌍 Translation servers (fallback list)
+/// Free translation servers (fallback list)
 const List<String> translationServers = [
   "https://translate.argosopentech.com/translate",
   "https://libretranslate.de/translate",
@@ -75,6 +75,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _speech = stt.SpeechToText();
   }
 
+  /// Mic + Translation
   Future<void> _listenAndTranslate(bool isFrom) async {
     if (!_isListening) {
       bool available = await _speech.initialize();
@@ -105,6 +106,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  /// Add messages + translate
   Future<void> _sendMessage(
     String text,
     String sourceLang,
@@ -129,7 +131,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  /// ✅ Multi-server fallback translation
+  /// Multi-server translation fallback
   Future<String> _translateText(
     String text,
     String fromCode,
@@ -153,16 +155,12 @@ class _ChatScreenState extends State<ChatScreen> {
           if (data["translatedText"] != null) {
             return data["translatedText"];
           }
-        } else {
-          debugPrint("❌ Server error ${response.statusCode} on $server");
         }
-      } catch (e) {
-        debugPrint("⚠️ Server failed: $server -> $e");
+      } catch (_) {
+        continue; // try next server
       }
     }
-
-    // fallback: agar sare servers fail kar jayein
-    return text; // original text return karega instead of error
+    return text; // fallback (original text)
   }
 
   @override
@@ -212,7 +210,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 White Chat Area
+          /// 🔹 Chat Area
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -286,7 +284,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 Language Selector Row (Dropdown + Mic)
+          /// 🔹 Language Selector + Mic
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
