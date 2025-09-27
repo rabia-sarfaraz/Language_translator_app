@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:http/http.dart' as http;
+import 'setting_screen.dart'; // 👈 make sure this file exists
 
-/// Language codes for translation
+/// Language codes (translation)
 const Map<String, String> languageCodes = {
   "English": "en",
   "Spanish": "es",
@@ -18,7 +19,7 @@ const Map<String, String> languageCodes = {
   "Russian": "ru",
 };
 
-/// Speech locales for mic recognition
+/// Speech locales (for mic recognition)
 const Map<String, String> speechLocales = {
   "English": "en-US",
   "Spanish": "es-ES",
@@ -32,7 +33,7 @@ const Map<String, String> speechLocales = {
   "Russian": "ru-RU",
 };
 
-/// Flags only for chat bubbles
+/// Flags for chat bubbles only
 const Map<String, String> languageFlags = {
   "English": "assets/flags/english.png",
   "Spanish": "assets/flags/spanish.png",
@@ -45,14 +46,6 @@ const Map<String, String> languageFlags = {
   "Chinese": "assets/flags/chinese.png",
   "Russian": "assets/flags/russian.png",
 };
-
-/// Free translation servers (fallback list)
-const List<String> translationServers = [
-  "https://translate.argosopentech.com/translate",
-  "https://libretranslate.de/translate",
-  "https://translate.astian.org/translate",
-  "https://libretranslate.com/translate",
-];
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -75,7 +68,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _speech = stt.SpeechToText();
   }
 
-  /// Mic + Translation
   Future<void> _listenAndTranslate(bool isFrom) async {
     if (!_isListening) {
       bool available = await _speech.initialize();
@@ -106,7 +98,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  /// Add messages + translate
   Future<void> _sendMessage(
     String text,
     String sourceLang,
@@ -131,36 +122,31 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  /// Multi-server translation fallback
+  /// ✅ MyMemory API (no key needed, more reliable than LibreTranslate)
   Future<String> _translateText(
     String text,
     String fromCode,
     String toCode,
   ) async {
-    for (final server in translationServers) {
-      try {
-        final response = await http.post(
-          Uri.parse(server),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode({
-            "q": text,
-            "source": fromCode,
-            "target": toCode,
-            "format": "text",
-          }),
-        );
+    try {
+      final response = await http.get(
+        Uri.parse(
+          "https://api.mymemory.translated.net/get?q=$text&langpair=$fromCode|$toCode",
+        ),
+      );
 
-        if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
-          if (data["translatedText"] != null) {
-            return data["translatedText"];
-          }
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data["responseData"]?["translatedText"] != null) {
+          return data["responseData"]["translatedText"];
         }
-      } catch (_) {
-        continue; // try next server
       }
+    } catch (e) {
+      debugPrint("⚠️ Translation error: $e");
     }
-    return text; // fallback (original text)
+
+    // fallback → agar translation fail ho jaye to original text return karega
+    return text;
   }
 
   @override
@@ -199,10 +185,22 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                 ),
-                Image.asset(
-                  "assets/images/right_icon.png",
-                  height: 24,
-                  width: 24,
+
+                /// ✅ Right side icon → navigate to settings
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingScreen(),
+                      ),
+                    );
+                  },
+                  child: Image.asset(
+                    "assets/images/right_icon.png",
+                    height: 24,
+                    width: 24,
+                  ),
                 ),
               ],
             ),
@@ -210,7 +208,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 Chat Area
+          /// 🔹 White Chat Area
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -284,7 +282,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 Language Selector + Mic
+          /// 🔹 Language Selector Row (Dropdown + Mic)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
