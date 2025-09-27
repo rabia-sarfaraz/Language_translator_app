@@ -5,7 +5,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:http/http.dart' as http;
 import 'setting_screen.dart'; // 👈 make sure this file exists
 
-/// Language codes (translation)
+/// Language codes (translation target)
 const Map<String, String> languageCodes = {
   "English": "en",
   "Spanish": "es",
@@ -107,22 +107,49 @@ class _ChatScreenState extends State<ChatScreen> {
       messages.add({"text": text, "isUser": true, "lang": sourceLang});
     });
 
-    String translatedText = await _translateText(
-      text,
-      languageCodes[sourceLang]!,
-      languageCodes[targetLang]!,
-    );
+    String reply = await _getAIReply(text, targetLang);
 
     setState(() {
-      messages.add({
-        "text": translatedText,
-        "isUser": false,
-        "lang": targetLang,
-      });
+      messages.add({"text": reply, "isUser": false, "lang": targetLang});
     });
   }
 
-  /// ✅ MyMemory API (no key needed, more reliable than LibreTranslate)
+  /// ✅ HuggingFace chatbot reply
+  Future<String> _getAIReply(String text, String targetLang) async {
+    try {
+      // Step 1: Get AI reply in English
+      final response = await http.post(
+        Uri.parse(
+          "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
+        ),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"inputs": text}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        String aiReply = data[0]["generated_text"] ?? "I don’t understand.";
+
+        // Step 2: Translate AI reply to target language (if not English)
+        if (targetLang != "English") {
+          aiReply = await _translateText(
+            aiReply,
+            languageCodes["English"]!,
+            languageCodes[targetLang]!,
+          );
+        }
+
+        return aiReply;
+      } else {
+        return "⚠️ AI server error (${response.statusCode})";
+      }
+    } catch (e) {
+      debugPrint("⚠️ AI Reply error: $e");
+      return "⚠️ Failed to get response";
+    }
+  }
+
+  /// Free translation API (MyMemory)
   Future<String> _translateText(
     String text,
     String fromCode,
@@ -144,15 +171,13 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       debugPrint("⚠️ Translation error: $e");
     }
-
-    // fallback → agar translation fail ho jaye to original text return karega
     return text;
   }
 
   @override
   Widget build(BuildContext context) {
-    const Color userBubbleColor = Color(0x803E7AFF); // lighter blue
-    const Color replyBubbleColor = Color(0xFF3E7AFF); // solid blue
+    const Color userBubbleColor = Color(0x803E7AFF);
+    const Color replyBubbleColor = Color(0xFF3E7AFF);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F4),
@@ -185,8 +210,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                 ),
-
-                /// ✅ Right side icon → navigate to settings
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -208,7 +231,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 White Chat Area
+          /// 🔹 Chat Area
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -282,7 +305,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 16),
 
-          /// 🔹 Language Selector Row (Dropdown + Mic)
+          /// 🔹 Language Selector Row
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -305,7 +328,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
           const SizedBox(height: 12),
 
-          /// 🔹 Bottom Navigation
+          /// 🔹 Bottom Nav
           Container(
             width: double.infinity,
             height: 56,
