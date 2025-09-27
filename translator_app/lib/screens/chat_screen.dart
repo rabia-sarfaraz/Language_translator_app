@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:http/http.dart' as http;
 
-/// Language codes (no flags in dropdown)
+/// Language codes (translation)
 const Map<String, String> languageCodes = {
   "English": "en",
   "Spanish": "es",
@@ -16,6 +16,20 @@ const Map<String, String> languageCodes = {
   "Hindi": "hi",
   "Chinese": "zh",
   "Russian": "ru",
+};
+
+/// Speech locales (for mic recognition)
+const Map<String, String> speechLocales = {
+  "English": "en-US",
+  "Spanish": "es-ES",
+  "French": "fr-FR",
+  "German": "de-DE",
+  "Italian": "it-IT",
+  "Urdu": "ur-PK",
+  "Arabic": "ar-SA",
+  "Hindi": "hi-IN",
+  "Chinese": "zh-CN",
+  "Russian": "ru-RU",
 };
 
 /// Flags for chat bubbles only
@@ -34,6 +48,7 @@ const Map<String, String> languageFlags = {
 
 /// 🌍 Translation servers (fallback list)
 const List<String> translationServers = [
+  "https://translate.argosopentech.com/translate",
   "https://libretranslate.de/translate",
   "https://translate.astian.org/translate",
   "https://libretranslate.com/translate",
@@ -80,8 +95,8 @@ class _ChatScreenState extends State<ChatScreen> {
             }
           },
           localeId: isFrom
-              ? languageCodes[fromLanguage]!
-              : languageCodes[toLanguage]!,
+              ? speechLocales[fromLanguage]!
+              : speechLocales[toLanguage]!,
         );
       }
     } else {
@@ -135,13 +150,19 @@ class _ChatScreenState extends State<ChatScreen> {
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
-          return data["translatedText"] ?? "No translation found.";
+          if (data["translatedText"] != null) {
+            return data["translatedText"];
+          }
+        } else {
+          debugPrint("❌ Server error ${response.statusCode} on $server");
         }
       } catch (e) {
         debugPrint("⚠️ Server failed: $server -> $e");
       }
     }
-    return "⚠️ All translation servers failed.";
+
+    // fallback: agar sare servers fail kar jayein
+    return text; // original text return karega instead of error
   }
 
   @override
